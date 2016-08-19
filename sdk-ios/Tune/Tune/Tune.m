@@ -33,6 +33,7 @@
 #import "TuneState.h"
 #import "TuneSessionManager.h"
 #import "TunePushInfo+Internal.h"
+#import "TuneProximityHelper.h"
 
 #ifdef TUNE_USE_LOCATION
 #import "TuneRegionMonitor.h"
@@ -123,6 +124,13 @@ static TuneTracker *_sharedManager = nil;
         tuneManager.configurationPlayer = configurationPlayer;
     }
 
+#if TARGET_OS_IOS
+    if ([TuneProximityHelper isProximityEnabled]){
+        TuneProximityHelper* tuneProximityHelper = [TuneProximityHelper new];
+        [tuneProximityHelper startMonitoringWithTuneAdvertiserId:aid tuneConversionKey:key];
+    }
+#endif
+    
     [[self sharedManager] startTracker];
 }
 

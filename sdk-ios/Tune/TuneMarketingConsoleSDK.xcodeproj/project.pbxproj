@@ -153,6 +153,10 @@
 		3FD219941B98D63100626DC6 /* TuneEventItem+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 3FD219931B98D63100626DC6 /* TuneEventItem+Internal.h */; };
 		3FEBF7FF1B8E5CE60030EF4D /* TunePIIUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 3FEBF7FD1B8E5CE60030EF4D /* TunePIIUtils.h */; };
 		3FEBF8001B8E5CE60030EF4D /* TunePIIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FEBF7FE1B8E5CE60030EF4D /* TunePIIUtils.m */; };
+		9BEA13311D665C4200CC3AB0 /* TuneProximityHelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEA13301D665C4200CC3AB0 /* TuneProximityHelperTests.m */; };
+		9BEA13341D665C8E00CC3AB0 /* TuneProximityHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 9BEA13321D665C8E00CC3AB0 /* TuneProximityHelper.h */; };
+		9BEA13351D665C8E00CC3AB0 /* TuneProximityHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEA13331D665C8E00CC3AB0 /* TuneProximityHelper.m */; };
+		9BEA13361D665DFC00CC3AB0 /* TuneProximityHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEA13331D665C8E00CC3AB0 /* TuneProximityHelper.m */; };
 		AE89470A1CC55D5A00525862 /* TuneConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = AE8947091CC55D5A00525862 /* TuneConstants.m */; };
 		DB0FF56B1B90EB3C0071B996 /* TuneSwizzleBlacklistTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DB0FF56A1B90EB3C0071B996 /* TuneSwizzleBlacklistTests.m */; };
 		DB0FF56D1B90FB610071B996 /* UIViewController+TuneAnalyticsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DB0FF56C1B90FB610071B996 /* UIViewController+TuneAnalyticsTests.m */; };
@@ -1354,6 +1358,9 @@
 		3FE85AF51B87F921008E706B /* TuneAnalyticsItemTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TuneAnalyticsItemTests.m; sourceTree = "<group>"; };
 		3FEBF7FD1B8E5CE60030EF4D /* TunePIIUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TunePIIUtils.h; sourceTree = "<group>"; };
 		3FEBF7FE1B8E5CE60030EF4D /* TunePIIUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TunePIIUtils.m; sourceTree = "<group>"; };
+		9BEA13301D665C4200CC3AB0 /* TuneProximityHelperTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TuneProximityHelperTests.m; sourceTree = "<group>"; };
+		9BEA13321D665C8E00CC3AB0 /* TuneProximityHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TuneProximityHelper.h; sourceTree = "<group>"; };
+		9BEA13331D665C8E00CC3AB0 /* TuneProximityHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TuneProximityHelper.m; sourceTree = "<group>"; };
 		AE8947091CC55D5A00525862 /* TuneConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TuneConstants.m; sourceTree = "<group>"; };
 		DB0FF56A1B90EB3C0071B996 /* TuneSwizzleBlacklistTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TuneSwizzleBlacklistTests.m; sourceTree = "<group>"; };
 		DB0FF56C1B90FB610071B996 /* UIViewController+TuneAnalyticsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+TuneAnalyticsTests.m"; sourceTree = "<group>"; };
@@ -1825,6 +1832,8 @@
 				0BCB5A361B65F9B8005216E2 /* TuneKeyStrings.m */,
 				0BCB5A371B65F9B8005216E2 /* TuneLocationHelper.h */,
 				0BCB5A381B65F9B8005216E2 /* TuneLocationHelper.m */,
+				9BEA13321D665C8E00CC3AB0 /* TuneProximityHelper.h */,
+				9BEA13331D665C8E00CC3AB0 /* TuneProximityHelper.m */,
 				0BCB5A391B65F9B8005216E2 /* TuneReachability.h */,
 				0BCB5A3A1B65F9B8005216E2 /* TuneReachability.m */,
 				0BCB5A3B1B65F9B8005216E2 /* TuneRegionMonitor.h */,
@@ -1878,6 +1887,7 @@
 				0B770F411B66325E00C51B87 /* TuneTrackerInitializationTests.m */,
 				3F4BB1ED1B82514A0084864D /* TuneUserDefaultsUtilsTests.m */,
 				0B770F401B66325E00C51B87 /* TuneUtilsTests.m */,
+				9BEA13301D665C4200CC3AB0 /* TuneProximityHelperTests.m */,
 			);
 			name = TuneTests;
 			path = TuneMarketingConsoleSDKTests;
@@ -2602,6 +2612,7 @@
 				DB918C161B8E60FD0077305B /* TuneEvent+Internal.h in Headers */,
 				32B9A4321BBB3703006E3D4F /* TuneDeeplinkConstants.h in Headers */,
 				DBA92C841B9F626800150B12 /* TuneTakeOverMessageDefaults.h in Headers */,
+				9BEA13341D665C8E00CC3AB0 /* TuneProximityHelper.h in Headers */,
 				DB918C181B8E60FD0077305B /* TuneEventQueue.h in Headers */,
 				DB918C191B8E60FD0077305B /* TuneFBBridge.h in Headers */,
 				DB918C1A1B8E60FD0077305B /* TuneIfa.h in Headers */,
@@ -3211,6 +3222,7 @@
 				3FEBF8001B8E5CE60030EF4D /* TunePIIUtils.m in Sources */,
 				0BCB5A671B65F9B8005216E2 /* TuneTracker.m in Sources */,
 				DBA92C7A1B9F4D6700150B12 /* TuneImageUtils.m in Sources */,
+				9BEA13351D665C8E00CC3AB0 /* TuneProximityHelper.m in Sources */,
 				0BCB5A781B65F9FB005216E2 /* TuneRequestsQueue.m in Sources */,
 				F83B85171B7C0FFB00994318 /* TuneApi.m in Sources */,
 				DB0FF5831B94CB030071B996 /* TuneCampaign.m in Sources */,
@@ -3321,6 +3333,7 @@
 				F8F693D31CFFC15B00B453D9 /* TuneCallbackBlock.m in Sources */,
 				F8F693D61CFFC15B00B453D9 /* TuneEventKeys.m in Sources */,
 				F8F6940B1CFFC15B00B453D9 /* TuneConfigurationKeys.m in Sources */,
+				9BEA13311D665C4200CC3AB0 /* TuneProximityHelperTests.m in Sources */,
 				DB10086B1BCC310C00C7F7F3 /* TuneConnectedModeManageTests.m in Sources */,
 				F8F694171CFFC15B00B453D9 /* TuneUserProfileKeys.m in Sources */,
 				DBCA43161B8E642300483318 /* TuneAnalyticsEventTests.m in Sources */,
@@ -3471,6 +3484,7 @@
 				F8F694251CFFC15B00B453D9 /* Tune.m in Sources */,
 				F8F694221CFFC15B00B453D9 /* TuneHttpResponse.m in Sources */,
 				DB0FF56D1B90FB610071B996 /* UIViewController+TuneAnalyticsTests.m in Sources */,
+				9BEA13361D665DFC00CC3AB0 /* TuneProximityHelper.m in Sources */,
 				F8F6940A1CFFC15B00B453D9 /* TuneConfiguration.m in Sources */,
 				DBCA43381B8E642300483318 /* TuneUserDefaultsUtilsTests.m in Sources */,
 				DBCA43391B8E642300483318 /* TuneUserProfileTests.m in Sources */,

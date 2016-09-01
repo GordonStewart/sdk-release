@@ -185,6 +185,10 @@ public class Tune {
                 if (tune.collectLocation) {
                     // Get initial location
                     tune.locationListener.startListening();
+                    TuneProximity tuneProximity = new TuneProximity();
+                    if (tuneProximity.isProximityEnabled(configuration)){
+                        tuneProximity.startMonitoring(context, advertiserId, conversionKey, configuration);
+                    }
                 }
             }
         }

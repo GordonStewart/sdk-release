@@ -124,9 +124,9 @@ static TuneTracker *_sharedManager = nil;
         tuneManager.configurationPlayer = configurationPlayer;
     }
 
-#if TARGET_OS_IOS
-    if ([TuneProximityHelper isProximityEnabled]){
-        TuneProximityHelper* tuneProximityHelper = [TuneProximityHelper new];
+#if TARGET_OS_IOS 
+    if ([TuneManager currentManager].configuration.shouldAutoCollectDeviceLocation && [TuneProximityHelper isProximityInstalled]){
+        TuneProximityHelper* tuneProximityHelper = [TuneProximityHelper getInstance];
         [tuneProximityHelper startMonitoringWithTuneAdvertiserId:aid tuneConversionKey:key];
     }
 #endif
@@ -248,6 +248,17 @@ static TuneTracker *_sharedManager = nil;
     [opQueue addOperationWithBlock:^{
         [[TuneManager currentManager].configuration setShouldAutoCollectDeviceLocation:autoCollect];
     }];
+#if TARGET_OS_IOS
+    if ([TuneProximityHelper isProximityInstalled]){
+        if (!autoCollect){
+            [[TuneProximityHelper getInstance] stopMonitoring];
+        } else {
+            [[TuneProximityHelper getInstance]
+             startMonitoringWithTuneAdvertiserId:[[TuneManager currentManager].userProfile advertiserId]
+             tuneConversionKey:[[TuneManager currentManager].userProfile conversionKey]];
+        }
+    }
+#endif
 }
 
 #if !TARGET_OS_WATCH
@@ -341,6 +352,11 @@ static TuneTracker *_sharedManager = nil;
     [opQueue addOperationWithBlock:^{
         [[TuneManager currentManager].configuration setShouldAutoCollectDeviceLocation:NO];
         [[TuneManager currentManager].userProfile setLocation:location];
+#if TARGET_OS_IOS
+        if ([TuneProximityHelper isProximityInstalled]){
+            [[TuneProximityHelper getInstance] stopMonitoring];
+        }
+#endif
     }];
 }
 

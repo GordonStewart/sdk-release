@@ -7,15 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-@class SmartWhere;
 
 @protocol SmartWhereDelegate
 @end
 
 @interface TuneProximityHelper : NSObject <SmartWhereDelegate>
-+(BOOL) isProximityEnabled;
++(BOOL) isProximityInstalled;
 -(void) startMonitoringWithTuneAdvertiserId:(NSString *)aid tuneConversionKey:(NSString *)key;
-- (TuneProximityHelper*) init;
+-(void) stopMonitoring;
++(TuneProximityHelper*) getInstance;
 @end
 
 #ifndef EventActionType_Defined
@@ -65,9 +65,6 @@ typedef enum ProximityTriggerType : NSInteger {
 @property (nonatomic) ProximityTriggerType triggerType;
 @end
 
-@interface SmartWhere : NSObject
-@property (nonatomic, weak) NSObject<SmartWhereDelegate>* delegate;
-@end
 
 
 

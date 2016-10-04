@@ -13,19 +13,30 @@
 #import "TuneUtils.h"
 #import "TuneConfiguration.h"
 
-@interface TuneProximityHelper (Testing)
+@interface SmartWhereForTest : NSObject
+-(void) invalidate;
+@end
 
+@implementation SmartWhereForTest
+-(void) invalidate{}
+@end
+
+@interface TuneProximityHelper (Testing)
 -(void) startProximityMonitoringWithAppId: (NSString*) appId
                                withApiKey: (NSString*) apiKey
                             withApiSecret: (NSString*) apiSecret
                                withConfig: (NSDictionary*) config;
 
+-(void) setSmartWhere:(id) smartWhere;
+-(id) getSmartWhere;
++(void) invalidateForTesting;
 @end
 
 @interface TuneProximityHelperTests : XCTestCase {
     TuneProximityHelper *testObj;
     id mockTuneManager;
     id mockTuneUtils;
+    id mockSmartWhere;
 }
 
 @end
@@ -37,41 +48,42 @@
     
     mockTuneUtils = OCMStrictClassMock([TuneUtils class]);
     mockTuneManager = OCMStrictClassMock([TuneManager class]);
+    mockSmartWhere = OCMStrictClassMock([SmartWhereForTest class]);
     
-    testObj = [TuneProximityHelper new];
+    [TuneProximityHelper invalidateForTesting];
+    testObj = [TuneProximityHelper getInstance];
 }
 
 - (void)tearDown {
     [mockTuneManager stopMocking];
     [mockTuneUtils stopMocking];
+    [TuneProximityHelper invalidateForTesting];
     [super tearDown];
 }
 
-#pragma mark - isProximityEnabled tests
+#pragma mark - init tests
 
-- (void)testIsProximityEnabledChecksAutoCollectLocationConfiguration {
-    [self setTuneConfigurationMockWithAutoCollect:NO withDebug:NO];
-    
-    XCTAssertFalse([TuneProximityHelper isProximityEnabled]);
-    
-    [mockTuneManager verify];
+- (void)testSecondInitReturnsSameObject {
+    TuneProximityHelper* newObj = [TuneProximityHelper getInstance];
+    XCTAssertEqual(testObj, newObj);
 }
 
-- (void)testIsProximityEnabledReturnsFalseWhenSmartWhereClassNotFound{
-    [self setTuneConfigurationMockWithAutoCollect:YES withDebug:NO];
+#pragma mark - isProximityInstalled tests
+- (void)testIsProximityInstalledReturnsFalseWhenSmartWhereClassNotFound{
+    [self setTuneConfigurationMockWithDebug:NO];
     
     [[[[mockTuneUtils expect] classMethod] andReturn:nil] getClassFromString:@"SmartWhere"];
-    XCTAssertFalse([TuneProximityHelper isProximityEnabled]);
+    XCTAssertFalse([TuneProximityHelper isProximityInstalled]);
     
     [mockTuneManager verify];
     [mockTuneUtils verify];
 }
 
-- (void)testIsProximityEnabledReturnsTrueWhenSmartWhereClassIsFound{
-    [self setTuneConfigurationMockWithAutoCollect:YES withDebug:NO];
+- (void)testIsProximityInstalledReturnsTrueWhenSmartWhereClassIsFound{
+    [self setTuneConfigurationMockWithDebug:NO];
     [self setTuneUtilsGetClassFromStringToAnObject];
     
-    XCTAssertTrue([TuneProximityHelper isProximityEnabled]);
+    XCTAssertTrue([TuneProximityHelper isProximityInstalled]);
     
     [mockTuneManager verify];
     [mockTuneUtils verify];
@@ -79,23 +91,8 @@
 
 #pragma mark - startMonitoringWithTuneAdvertiserId:tuneConversionKey: tests
 
-- (void)testStartMonitoringDoesntStartWhenAutoCollectLocationIsNO{
-    [self setTuneConfigurationMockWithAutoCollect:NO withDebug:NO];
-    
-    id mockTestObj = OCMPartialMock(testObj);
-    [[mockTestObj reject] startProximityMonitoringWithAppId: OCMOCK_ANY
-                                                 withApiKey: OCMOCK_ANY
-                                              withApiSecret: OCMOCK_ANY
-                                                 withConfig: OCMOCK_ANY];
-    
-    [mockTestObj startMonitoringWithTuneAdvertiserId:@"aid" tuneConversionKey:@"key"];
-    
-    [mockTestObj verify];
-    [mockTuneManager verify];
-}
-
 - (void)testStartMonitoringStartsProximityMonitoringWithAdIdAndConversionKey {
-    [self setTuneConfigurationMockWithAutoCollect:YES withDebug:NO];
+    [self setTuneConfigurationMockWithDebug:NO];
     [self setTuneUtilsGetClassFromStringToAnObject];
     
     NSString* aid = @"aid";
@@ -123,8 +120,26 @@
     [mockTestObj verify];
 }
 
+- (void)testStartMonitoringDoesntStartWhenAlreadyStarted{
+    [testObj setSmartWhere:mockSmartWhere];
+    [self setTuneUtilsGetClassFromStringToAnObject];
+    
+    [self setTuneConfigurationMockWithDebug:NO];
+    
+    id mockTestObj = OCMPartialMock(testObj);
+    [[mockTestObj reject] startProximityMonitoringWithAppId: OCMOCK_ANY
+                                                 withApiKey: OCMOCK_ANY
+                                              withApiSecret: OCMOCK_ANY
+                                                 withConfig: OCMOCK_ANY];
+    
+    [mockTestObj startMonitoringWithTuneAdvertiserId:@"aid" tuneConversionKey:@"key"];
+    
+    [mockTestObj verify];
+    [mockTuneManager verify];
+}
+
 - (void)testStartMonitoringSetsDebugLoggingWhenTuneLoggingIsEnabled {
-    [self setTuneConfigurationMockWithAutoCollect:YES withDebug:YES];
+    [self setTuneConfigurationMockWithDebug:YES];
     [self setTuneUtilsGetClassFromStringToAnObject];
     
     NSString* aid = @"aid";
@@ -149,10 +164,21 @@
     [mockTestObj verify];
 }
 
+#pragma mark - stopMonitoring tests
+
+- (void)testStopMonitoringCallsInvalidateOnSmartWhereAndSetsToNil {
+    [testObj setSmartWhere:mockSmartWhere];
+    [[mockSmartWhere expect] invalidate];
+    
+    [testObj stopMonitoring];
+    
+    [mockSmartWhere verify];
+    XCTAssertNil(testObj.getSmartWhere);
+}
+
 #pragma mark - test helpers
-- (void)setTuneConfigurationMockWithAutoCollect: (BOOL) value withDebug: (BOOL) debug;{
+- (void)setTuneConfigurationMockWithDebug: (BOOL) debug;{
     TuneConfiguration* config = [TuneConfiguration new];
-    config.shouldAutoCollectDeviceLocation = value;
     config.debugMode = (debug) ? [NSNumber numberWithInt:1] : [NSNumber numberWithInt:0];
     [[[[mockTuneManager stub] classMethod] andReturn:mockTuneManager] currentManager];
     [[[mockTuneManager stub] andReturn:config] configuration];
@@ -163,6 +189,5 @@
     [[[[mockTuneUtils expect] classMethod] andReturn:obj] getClassFromString:@"SmartWhere"];
 }
 
-
-
 @end
+

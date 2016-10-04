@@ -185,14 +185,18 @@ public class Tune {
                 if (tune.collectLocation) {
                     // Get initial location
                     tune.locationListener.startListening();
-                    TuneProximity tuneProximity = new TuneProximity();
-                    if (tuneProximity.isProximityEnabled(configuration)){
-                        tuneProximity.startMonitoring(context, advertiserId, conversionKey, configuration);
-                    }
+                    tune.startLocationMonitoring();
                 }
             }
         }
         return tune;
+    }
+
+    private void startLocationMonitoring() {
+        TuneProximity tuneProximity = new TuneProximity();
+        if (tuneProximity.isProximityInstalled()){
+            tuneProximity.startMonitoring(mContext, params.getAdvertiserId(), params.getConversionKey(), isInDebugMode());
+        }
     }
 
     static void setInstance(Tune newTune) {
@@ -1162,6 +1166,7 @@ public class Tune {
     public void setLocation(final Location location) {
         pubQueue.execute(new Runnable() { public void run() {
             params.setLocation(new TuneLocation(location));
+            stopLocationMonitoring();
         }});
     }
 
@@ -1174,10 +1179,17 @@ public class Tune {
             @Override
             public void run() {
                 params.setLocation(location);
+                stopLocationMonitoring();
             }
         });
     }
 
+    private void stopLocationMonitoring() {
+        TuneProximity tuneProximity = new TuneProximity();
+        if (tuneProximity.isProximityInstalled()){
+            tuneProximity.stopMonitoring(mContext);
+        }
+    }
     /**
      * Sets the device longitude.
      * @param longitude the device longitude
@@ -1473,6 +1485,9 @@ public class Tune {
         collectLocation = autoCollect;
         if (!collectLocation) {
             locationListener.stopListening();
+            stopLocationMonitoring();
+        } else {
+            startLocationMonitoring();
         }
     }
 

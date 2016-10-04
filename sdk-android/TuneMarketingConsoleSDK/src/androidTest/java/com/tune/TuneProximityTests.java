@@ -2,16 +2,14 @@ package com.tune;
 
 import android.content.Context;
 
-import com.tune.ma.configuration.TuneConfiguration;
-
 import java.util.HashMap;
 
 /**
- * Created by gordon stewart on 8/17/16.
+ * Created by gordonstewart on 8/17/16.
  * @author gordon@smartwhere.com
  */
 
-public class TuneProximityTests extends TuneUnitTest {
+public class TuneProximityTests extends TuneUnitTest  {
 
     private TuneProximity testObj;
     private Context context;
@@ -30,50 +28,25 @@ public class TuneProximityTests extends TuneUnitTest {
         super.tearDown();
     }
 
-    public void testIsProximityEnabledChecksAutoCollectDeviceLocationConfiguration() throws Exception {
-        TuneConfiguration configuration = new TuneConfiguration();
-        configuration.setShouldAutoCollectDeviceLocation(true);
-
-        assertTrue(testObj.isProximityEnabled(configuration));
-
-        configuration.setShouldAutoCollectDeviceLocation(false);
-        assertFalse(testObj.isProximityEnabled(configuration));
-    }
-
-    public void testIsProximityEnabledReturnsFalseWhenProximityControlClassNotFound() throws Exception {
-        TuneConfiguration configuration = new TuneConfiguration();
-        configuration.setShouldAutoCollectDeviceLocation(true);
+    public void testIsProximityInstalledReturnsFalseWhenProximityControlClassNotFound() throws Exception {
         TuneProximityForTest.clazz = null;
 
-        assertFalse(testObj.isProximityEnabled(configuration));
+        assertFalse(testObj.isProximityInstalled());
         assertEquals("Incorrect class name specified", TuneProximity.COM_PROXIMITY_LIBRARY_PROXIMITYCONTROL, TuneProximityForTest.capturedClassNameString);
     }
 
-    public void testIsProximityEnabledReturnsTrueWhenProximityControlClassIsFound() throws Exception {
-        TuneConfiguration configuration = new TuneConfiguration();
-        configuration.setShouldAutoCollectDeviceLocation(true);
+    public void testIsProximityInstalledReturnsTrueWhenProximityControlClassIsFound() throws Exception {
         TuneProximityForTest.clazz = this.getClass();
 
-        assertTrue(testObj.isProximityEnabled(configuration));
+        assertTrue(testObj.isProximityInstalled());
         assertEquals("Incorrect class name specified", TuneProximity.COM_PROXIMITY_LIBRARY_PROXIMITYCONTROL, TuneProximityForTest.capturedClassNameString);
-    }
-
-    public void testStartMonitoringDoesntStartWhenAutoCollectLocationIsFalse() throws Exception {
-        TuneConfiguration configuration = new TuneConfiguration();
-        configuration.setShouldAutoCollectDeviceLocation(false);
-
-        testObj.startMonitoring(context, "appid","apisecret", configuration);
-
-        assertFalse("Service started when it shouldn't", FakeProximityControl.hasStartServiceBeenCalled);
     }
 
     public void testStartMonitoringConfiguresWithAdIdAndConversionKey() throws Exception {
-        TuneConfiguration configuration = new TuneConfiguration();
-        configuration.setShouldAutoCollectDeviceLocation(true);
         String addId = "addId";
         String conversionKey = "conversionKey";
 
-        testObj.startMonitoring(context, addId,conversionKey, configuration);
+        testObj.startMonitoring(context, addId,conversionKey, false);
 
         HashMap actualConfig = FakeProximityControl.capturedConfig;
         assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
@@ -86,28 +59,22 @@ public class TuneProximityTests extends TuneUnitTest {
     }
 
     public void testStartMonitoringSetsDebugLoggingWhenTuneLoggingIsEnabled() throws Exception {
-        TuneConfiguration configuration = new TuneConfiguration();
-        configuration.setShouldAutoCollectDeviceLocation(true);
-        configuration.setDebugLoggingOn(true);
         String addId = "addId";
         String conversionKey = "conversionKey";
 
-        testObj.startMonitoring(context, addId,conversionKey, configuration);
+        testObj.startMonitoring(context, addId,conversionKey, true);
 
         HashMap actualConfig = FakeProximityControl.capturedConfig;
         assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
         assertTrue(actualConfig.containsKey("DEBUG_LOG"));
         assertEquals(actualConfig.get("DEBUG_LOG"), "true");
-     }
+    }
 
     public void testStartMonitoringSetsProximityNotificationServiceName() throws Exception {
-        TuneConfiguration configuration = new TuneConfiguration();
-        configuration.setShouldAutoCollectDeviceLocation(true);
-        configuration.setDebugLoggingOn(true);
         String addId = "addId";
         String conversionKey = "conversionKey";
 
-        testObj.startMonitoring(context, addId,conversionKey, configuration);
+        testObj.startMonitoring(context, addId,conversionKey, false);
 
         HashMap actualConfig = FakeProximityControl.capturedConfig;
         assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
@@ -116,13 +83,10 @@ public class TuneProximityTests extends TuneUnitTest {
     }
 
     public void testStartMonitoringSetsPermissionPromptingOff() throws Exception {
-        TuneConfiguration configuration = new TuneConfiguration();
-        configuration.setShouldAutoCollectDeviceLocation(true);
-        configuration.setDebugLoggingOn(true);
         String addId = "addId";
         String conversionKey = "conversionKey";
 
-        testObj.startMonitoring(context, addId,conversionKey, configuration);
+        testObj.startMonitoring(context, addId,conversionKey, false);
 
         HashMap actualConfig = FakeProximityControl.capturedConfig;
         assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
@@ -131,13 +95,10 @@ public class TuneProximityTests extends TuneUnitTest {
     }
 
     public void testStartMonitoringSetsServiceAutoStartOn() throws Exception {
-        TuneConfiguration configuration = new TuneConfiguration();
-        configuration.setShouldAutoCollectDeviceLocation(true);
-        configuration.setDebugLoggingOn(true);
         String addId = "addId";
         String conversionKey = "conversionKey";
 
-        testObj.startMonitoring(context, addId,conversionKey, configuration);
+        testObj.startMonitoring(context, addId,conversionKey, false);
 
         HashMap actualConfig = FakeProximityControl.capturedConfig;
         assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
@@ -146,13 +107,10 @@ public class TuneProximityTests extends TuneUnitTest {
     }
 
     public void testStartMonitoringSetsGeofenceRangingOn() throws Exception {
-        TuneConfiguration configuration = new TuneConfiguration();
-        configuration.setShouldAutoCollectDeviceLocation(true);
-        configuration.setDebugLoggingOn(true);
         String appId = "addId";
         String conversionKey = "conversionKey";
 
-        testObj.startMonitoring(context, appId, conversionKey, configuration);
+        testObj.startMonitoring(context, appId, conversionKey, false);
 
         HashMap actualConfig = FakeProximityControl.capturedConfig;
         assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
@@ -161,14 +119,27 @@ public class TuneProximityTests extends TuneUnitTest {
     }
 
     public void testStartMonitoringStartsService() throws Exception {
-        TuneConfiguration configuration = new TuneConfiguration();
-        configuration.setShouldAutoCollectDeviceLocation(true);
         String addId = "addId";
         String conversionKey = "conversionKey";
 
-        testObj.startMonitoring(context, addId,conversionKey, configuration);
+        testObj.startMonitoring(context, addId,conversionKey, false);
 
         assertTrue(FakeProximityControl.hasStartServiceBeenCalled);
+    }
+
+    public void testStopMonitoringSetsServiceAutoStartOff() throws Exception {
+        testObj.stopMonitoring(context);
+
+        HashMap actualConfig = FakeProximityControl.capturedConfig;
+        assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
+        assertTrue(actualConfig.containsKey("SERVICE_AUTO_START"));
+        assertEquals(actualConfig.get("SERVICE_AUTO_START"), "false");
+    }
+
+    public void testStopMonitoringStopsService() throws Exception {
+        testObj.stopMonitoring(context);
+
+        assertTrue(FakeProximityControl.hasStopServiceBeenCalled);
     }
 }
 
@@ -194,7 +165,7 @@ class TuneProximityForTest extends TuneProximity{
 class FakeProximityControl {
     public static Context context;
     public static Object proximityNotification;
-    public static String code;
+    public static  String code;
     public static HashMap capturedConfig;
     public static  boolean permissionResult;
 

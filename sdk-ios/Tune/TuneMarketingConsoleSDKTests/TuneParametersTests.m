@@ -20,12 +20,14 @@
 #import "TuneUserProfileKeys.h"
 #import "TuneXCTestCase.h"
 #import "TuneHttpUtils.h"
+#import "TuneProximityHelper.h"
 
 #import <OCMock/OCMock.h>
 
 @interface TuneParametersTests : TuneXCTestCase <TuneDelegate> {
     TuneTestParams *params;
     id httpUtilsMock;
+    id proximityHelperMock;
 }
 
 @end
@@ -45,6 +47,8 @@
     networkOnline();
     
     httpUtilsMock = OCMClassMock([TuneHttpUtils class]);
+    proximityHelperMock = OCMStrictClassMock([TuneProximityHelper class]);
+    [[[[proximityHelperMock stub] classMethod] andReturn:proximityHelperMock] getInstance];
     
     NSHTTPURLResponse *dummyResp = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://www.tune.com"] statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
     NSError *dummyError = nil;
@@ -64,6 +68,8 @@
     [httpUtilsMock stopMocking];
     
     emptyRequestQueue();
+    
+    [proximityHelperMock stopMocking];
 
     [super tearDown];
 }
@@ -423,6 +429,74 @@
     ASSERT_KEY_VALUE( TUNE_KEY_ALTITUDE, expectedAlt );
 }
 
+- (void)testSetLocationStopsProximityMonitoring {
+    TuneLocation *location = [TuneLocation new];
+
+    [[[[proximityHelperMock expect] classMethod] andReturnValue:OCMOCK_VALUE(YES)] isProximityInstalled];
+    [[proximityHelperMock expect] stopMonitoring];
+    
+    [Tune setLocation:location];
+    waitForQueuesToFinish();
+    
+    [proximityHelperMock verify];
+}
+
+- (void)testSetLocationDoesntStopProximityMonitoringWhenNotInstalled {
+    TuneLocation *location = [TuneLocation new];
+    
+    [[[[proximityHelperMock expect] classMethod] andReturnValue:OCMOCK_VALUE(NO)] isProximityInstalled];
+    [[proximityHelperMock reject] stopMonitoring];
+    
+    [Tune setLocation:location];
+    waitForQueuesToFinish();
+    
+    [proximityHelperMock verify];
+}
+
+- (void)testSetShouldAutoCollectDeviceLocationStopsProximityMonitoringWhenSettingToNo {
+    [[[[proximityHelperMock expect] classMethod] andReturnValue:OCMOCK_VALUE(YES)] isProximityInstalled];
+    [[proximityHelperMock expect] stopMonitoring];
+    
+    [Tune setShouldAutoCollectDeviceLocation:NO];
+    waitForQueuesToFinish();
+    
+    [proximityHelperMock verify];
+}
+
+- (void)testSetShouldAutoCollectDeviceLocationDoesntStopProximityMonitoringWhenNotInstalledAndSettingToNo {
+    [[[[proximityHelperMock expect] classMethod] andReturnValue:OCMOCK_VALUE(NO)] isProximityInstalled];
+    [[proximityHelperMock reject] stopMonitoring];
+    
+    [Tune setShouldAutoCollectDeviceLocation:NO];
+    waitForQueuesToFinish();
+    
+    [proximityHelperMock verify];
+}
+
+- (void)testSetShouldAutoCollectDeviceLocationStartsProximityMonitoringWhenSettingToYes {
+    NSString* advertiserId = [[TuneManager currentManager].userProfile advertiserId];
+    NSString* conversionKey =[[TuneManager currentManager].userProfile conversionKey];
+    XCTAssertNotNil(advertiserId);
+    XCTAssertNotNil(conversionKey);
+    
+    [[[[proximityHelperMock expect] classMethod] andReturnValue:OCMOCK_VALUE(YES)] isProximityInstalled];
+    [[proximityHelperMock expect] startMonitoringWithTuneAdvertiserId:advertiserId tuneConversionKey:conversionKey];
+
+    [Tune setShouldAutoCollectDeviceLocation:YES];
+    waitForQueuesToFinish();
+    
+    [proximityHelperMock verify];
+}
+
+- (void)testSetShouldAutoCollectDeviceLocationDoesntStartProximityMonitoringWhenNotInstalledAndSettingToYes {
+    [[[[proximityHelperMock expect] classMethod] andReturnValue:OCMOCK_VALUE(NO)] isProximityInstalled];
+    [[proximityHelperMock reject] startMonitoringWithTuneAdvertiserId:OCMOCK_ANY tuneConversionKey:OCMOCK_ANY];
+
+    [Tune setShouldAutoCollectDeviceLocation:YES];
+    waitForQueuesToFinish();
+    
+    [proximityHelperMock verify];
+}
 
 #pragma mark - Currency code
 

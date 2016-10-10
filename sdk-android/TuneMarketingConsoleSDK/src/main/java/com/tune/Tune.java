@@ -193,7 +193,7 @@ public class Tune {
     }
 
     private void startLocationMonitoring() {
-        TuneProximity tuneProximity = new TuneProximity();
+        TuneProximity tuneProximity = TuneProximity.getInstance();
         if (tuneProximity.isProximityInstalled()){
             tuneProximity.startMonitoring(mContext, params.getAdvertiserId(), params.getConversionKey(), isInDebugMode());
         }
@@ -1185,7 +1185,7 @@ public class Tune {
     }
 
     private void stopLocationMonitoring() {
-        TuneProximity tuneProximity = new TuneProximity();
+        TuneProximity tuneProximity = TuneProximity.getInstance();
         if (tuneProximity.isProximityInstalled()){
             tuneProximity.stopMonitoring(mContext);
         }

@@ -1,16 +1,27 @@
 package com.tune;
 
 import android.content.Context;
+import android.location.Location;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.UUID;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 public class ParametersTests extends TuneUnitTest {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+
+        System.setProperty(
+                "dexmaker.dexcache",
+                getInstrumentation().getTargetContext().getCacheDir().getPath());
 
         tune.setOnline(false);
     }
@@ -712,6 +723,101 @@ public class ParametersTests extends TuneUnitTest {
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "longitude", expectedLongitude );
         assertEquals(longitude, tune.getLongitude());
+    }
+
+    public void testSetLocationStopsProximityMonitoring() throws Exception {
+        TuneProximity mockTuneProximity = mock(TuneProximity.class);
+        TuneProximity.setInstance(mockTuneProximity);
+        when(mockTuneProximity.isProximityInstalled()).thenReturn(true);
+
+        tune.setLocation(new Location("mockProvider"));
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        verify(mockTuneProximity).isProximityInstalled();
+        verify(mockTuneProximity).stopMonitoring(mContext);
+    }
+
+    public void testSetLocationDoesntStopProximityMonitoringIfNotInstalled() throws Exception {
+        TuneProximity mockTuneProximity = mock(TuneProximity.class);
+        TuneProximity.setInstance(mockTuneProximity);
+        when(mockTuneProximity.isProximityInstalled()).thenReturn(false);
+
+        tune.setLocation(new Location("mockProvider"));
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        verify(mockTuneProximity).isProximityInstalled();
+        verify(mockTuneProximity, never()).stopMonitoring(mContext);
+
+    }
+
+    public void testSetLocationWithTuneLocationStopsProximityMonitoring() throws Exception {
+        TuneProximity mockTuneProximity = mock(TuneProximity.class);
+        TuneProximity.setInstance(mockTuneProximity);
+        when(mockTuneProximity.isProximityInstalled()).thenReturn(true);
+
+        tune.setLocation(new TuneLocation(new Location("mockProvider")));
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        verify(mockTuneProximity).isProximityInstalled();
+        verify(mockTuneProximity).stopMonitoring(mContext);
+    }
+
+    public void testSetLocationWithTuneLocationDoesntStopProximityMonitoringIfNotInstalled() throws Exception {
+        TuneProximity mockTuneProximity = mock(TuneProximity.class);
+        TuneProximity.setInstance(mockTuneProximity);
+        when(mockTuneProximity.isProximityInstalled()).thenReturn(false);
+
+        tune.setLocation(new TuneLocation(new Location("mockProvider")));
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        verify(mockTuneProximity).isProximityInstalled();
+        verify(mockTuneProximity, never()).stopMonitoring(mContext);
+
+    }
+
+    public void testSetShouldAutoCollectDeviceLocationStopsProximityMonitoringWhenSetToFalse() throws Exception {
+        TuneProximity mockTuneProximity = mock(TuneProximity.class);
+        TuneProximity.setInstance(mockTuneProximity);
+        when(mockTuneProximity.isProximityInstalled()).thenReturn(true);
+
+        tune.setShouldAutoCollectDeviceLocation(false);
+
+        verify(mockTuneProximity).isProximityInstalled();
+        verify(mockTuneProximity).stopMonitoring(mContext);
+    }
+
+    public void testSetShouldAutoCollectDeviceLocationDoesntAttemptToStopProximityMonitoringWhenSetToFalseButNotInstalled() throws Exception {
+        TuneProximity mockTuneProximity = mock(TuneProximity.class);
+        TuneProximity.setInstance(mockTuneProximity);
+        when(mockTuneProximity.isProximityInstalled()).thenReturn(false);
+
+        tune.setShouldAutoCollectDeviceLocation(false);
+
+        verify(mockTuneProximity).isProximityInstalled();
+        verify(mockTuneProximity, never()).stopMonitoring(mContext);
+    }
+
+    public void testSetShouldAutoCollectDeviceLocationStartsProximityMonitoringWhenSetToTrue() throws Exception {
+        TuneProximity mockTuneProximity = mock(TuneProximity.class);
+        TuneProximity.setInstance(mockTuneProximity);
+        when(mockTuneProximity.isProximityInstalled()).thenReturn(true);
+
+        tune.setShouldAutoCollectDeviceLocation(true);
+
+        verify(mockTuneProximity).isProximityInstalled();
+        verify(mockTuneProximity).startMonitoring(mContext, TuneTestConstants.advertiserId, TuneTestConstants.conversionKey, false);
+    }
+
+    public void testSetShouldAutoCollectDeviceLocationDoesntAttemptToStartProximityMonitoringWhenSetToTrueButNotInstalled() throws Exception {
+        TuneProximity mockTuneProximity = mock(TuneProximity.class);
+        TuneProximity.setInstance(mockTuneProximity);
+        when(mockTuneProximity.isProximityInstalled()).thenReturn(false);
+
+        tune.setShouldAutoCollectDeviceLocation(true);
+
+        verify(mockTuneProximity).isProximityInstalled();
+        verify(mockTuneProximity, never()).startMonitoring(mContext, TuneTestConstants.advertiserId, TuneTestConstants.conversionKey, false);
+
     }
 
     public void testMacAddress() {

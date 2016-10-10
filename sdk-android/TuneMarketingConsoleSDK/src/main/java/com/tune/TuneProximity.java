@@ -11,9 +11,20 @@ import java.util.HashMap;
  */
 
 public class TuneProximity {
+    private static volatile TuneProximity instance = null;
 
     public static final String COM_PROXIMITY_LIBRARY_PROXIMITYCONTROL = "com.proximity.library.ProximityControl";
     public static final String PROXIMITY_NOTIFICATION_SERVICE = "com.tune.TuneProximityNotificationService";
+
+    protected TuneProximity() {
+    }
+
+    public static synchronized TuneProximity getInstance(){
+        if (instance == null){
+            instance = new TuneProximity();
+        }
+        return instance;
+    }
 
     public boolean isProximityInstalled() {
         return classForName(COM_PROXIMITY_LIBRARY_PROXIMITYCONTROL) != null;
@@ -68,6 +79,10 @@ public class TuneProximity {
                 TuneUtils.log("TuneProximity.stopMonitoring: " + e.getLocalizedMessage());
             }
         }
+    }
+
+    protected static synchronized void setInstance(TuneProximity tuneProximity){
+        instance = tuneProximity;
     }
 
     protected Class classForName(String name){

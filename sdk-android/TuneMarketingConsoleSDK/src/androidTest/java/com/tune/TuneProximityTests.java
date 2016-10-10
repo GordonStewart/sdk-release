@@ -20,12 +20,13 @@ public class TuneProximityTests extends TuneUnitTest  {
         FakeProximityControl.reset();
         context = getContext();
 
-        testObj = new TuneProximityForTest();
+        testObj = TuneProximityForTest.getInstance();
     }
 
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
+        TuneProximityForTest.setInstance(null);
     }
 
     public void testIsProximityInstalledReturnsFalseWhenProximityControlClassNotFound() throws Exception {
@@ -149,9 +150,10 @@ class TuneProximityForTest extends TuneProximity{
 
     public static HashMap<String,String> config;
 
-    public TuneProximityForTest() {
+    public static synchronized TuneProximity getInstance(){
         clazz = FakeProximityControl.class;
         config = null;
+        return new TuneProximityForTest();
     }
 
     @Override

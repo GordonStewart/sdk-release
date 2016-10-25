@@ -14,6 +14,7 @@
 #import "TuneKeyStrings.h"
 #import "TuneLocation.h"
 #import "TuneManager.h"
+#import "TuneNetworkUtils.h"
 #import "TuneTestParams.h"
 #import "TuneTracker.h"
 #import "TuneUserProfile.h"
@@ -28,6 +29,7 @@
     TuneTestParams *params;
     id httpUtilsMock;
     id proximityHelperMock;
+    id classMockTuneNetworkUtils;
 }
 
 @end
@@ -44,7 +46,11 @@
     
     params = [TuneTestParams new];
     
-    networkOnline();
+    __block BOOL forcedNetworkStatus = YES;
+    classMockTuneNetworkUtils = OCMClassMock([TuneNetworkUtils class]);
+    OCMStub(ClassMethod([classMockTuneNetworkUtils isNetworkReachable])).andDo(^(NSInvocation *invocation) {
+        [invocation setReturnValue:&forcedNetworkStatus];
+    });
     
     httpUtilsMock = OCMClassMock([TuneHttpUtils class]);
     proximityHelperMock = OCMStrictClassMock([TuneProximityHelper class]);
@@ -65,11 +71,11 @@
     [Tune setPackageName:kTestBundleId];
     [Tune setPluginName:nil];
 
+    [classMockTuneNetworkUtils stopMocking];
     [httpUtilsMock stopMocking];
+    [proximityHelperMock stopMocking];
     
     emptyRequestQueue();
-    
-    [proximityHelperMock stopMocking];
 
     [super tearDown];
 }

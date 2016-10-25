@@ -98,6 +98,16 @@ public class ParametersTests extends TuneUnitTest {
         assertEquals(age, tune.getAge());
     }
 
+    public void testAgeNull() {
+        // don't set an age, the param will be null
+        tune.measureEvent("registration");
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        assertTrue( "params default values failed " + params, params.checkDefaultValues() );
+        assertNoValueForKey("age");
+        assertEquals(0, tune.getAge());
+    }
+
     public void testAltitudeValid() {
         final double altitude = 43;
         String expectedAltitude = Double.toString( altitude );
@@ -108,7 +118,7 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "altitude", expectedAltitude );
-        assertEquals(altitude, tune.getAltitude());
+        assertEquals(altitude, tune.getAltitude(), 0.0001);
     }
 
     public void testAltitudeZero() {
@@ -121,7 +131,7 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "altitude", expectedAltitude );
-        assertEquals(altitude, tune.getAltitude());
+        assertEquals(altitude, tune.getAltitude(), 0.0001);
     }
 
     public void testAltitudeVeryLarge() {
@@ -134,11 +144,11 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "altitude", expectedAltitude );
-        assertEquals(altitude, tune.getAltitude());
+        assertEquals(altitude, tune.getAltitude(), 0.0001);
     }
 
     public void testAltitudeVerySmall() {
-        final double altitude = -6701;
+        final double altitude = Double.MIN_VALUE;
         String expectedAltitude = Double.toString( altitude );
         
         tune.setAltitude( altitude );
@@ -147,13 +157,12 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "altitude", expectedAltitude );
-        assertEquals(altitude, tune.getAltitude());
+        assertEquals(altitude, tune.getAltitude(), 0.0001);
     }
     
     public void testAndroidId() {
         final String androidId = "59a3747895bdb03d";
 
-        sleep( 1000 );
         tune.setAndroidId(androidId);
         tune.measureEvent("registration");
         sleep( TuneTestConstants.PARAMTEST_SLEEP );
@@ -161,6 +170,18 @@ public class ParametersTests extends TuneUnitTest {
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "android_id", androidId );
         assertEquals(androidId, tune.getAndroidId());
+    }
+
+    public void testAndroidIdNull() {
+        final String androidId = null;
+
+        tune.setAndroidId(androidId);
+        tune.measureEvent("registration");
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        assertTrue( "params default values failed " + params, params.checkDefaultValues() );
+        assertNoValueForKey("android_id");
+        assertNull(tune.getAndroidId());
     }
     
     public void testAndroidIdMd5() {
@@ -486,6 +507,17 @@ public class ParametersTests extends TuneUnitTest {
         assertEquals(gender, tune.getGender());
     }
 
+    public void testGenderNotSetUnknown() {
+        // do not call set gender
+        tune.measureEvent("registration");
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        assertTrue( "params default values failed " + params, params.checkDefaultValues() );
+        assertNoValueForKey("gender");
+        assertEquals(TuneGender.UNKNOWN, tune.getGender());
+    }
+
+
     public void testGoogleAdvertisingId() {
         String googleAdvertisingId = UUID.randomUUID().toString();
 
@@ -495,6 +527,19 @@ public class ParametersTests extends TuneUnitTest {
 
         assertTrue("params default values failed " + params, params.checkDefaultValues());
         assertKeyValue(TuneUrlKeys.GOOGLE_AID, googleAdvertisingId);
+        assertEquals(googleAdvertisingId, tune.getGoogleAdvertisingId());
+        assertFalse(tune.getGoogleAdTrackingLimited());
+    }
+
+    public void testSetGoogleAdvertisingIdNull() {
+        String googleAdvertisingId = null;
+
+        tune.setGoogleAdvertisingId(googleAdvertisingId, false);
+        tune.measureEvent("registration");
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        assertTrue("params default values failed " + params, params.checkDefaultValues());
+        assertNoValueForKey(TuneUrlKeys.GOOGLE_AID);
         assertEquals(googleAdvertisingId, tune.getGoogleAdvertisingId());
         assertFalse(tune.getGoogleAdTrackingLimited());
     }
@@ -541,6 +586,16 @@ public class ParametersTests extends TuneUnitTest {
         assertFalse(tune.getIsPayingUser());
     }
 
+    public void testIsPayingUserNull() {
+        // do not set is paying user
+        tune.measureEvent("registration");
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        assertTrue( "params default values failed " + params, params.checkDefaultValues() );
+        assertNoValueForKey("is_paying_user");
+        assertFalse(tune.getIsPayingUser());
+    }
+
     public void testLatitudeValidGtZero() {
         final double latitude = 43;
         String expectedLatitude = Double.toString( latitude );
@@ -551,7 +606,7 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "latitude", expectedLatitude );
-        assertEquals(latitude, tune.getLatitude());
+        assertEquals(latitude, tune.getLatitude(), 0.0001);
     }
 
     public void testLatitudeValidLtZero() {
@@ -564,7 +619,7 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "latitude", expectedLatitude );
-        assertEquals(latitude, tune.getLatitude());
+        assertEquals(latitude, tune.getLatitude(), 0.0001);
     }
 
     public void testLatitudeZero() {
@@ -577,7 +632,7 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "latitude", expectedLatitude );
-        assertEquals(latitude, tune.getLatitude());
+        assertEquals(latitude, tune.getLatitude(), 0.0001);
     }
 
     public void testLatitudeVeryLarge() {
@@ -590,7 +645,7 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "latitude", expectedLatitude );
-        assertEquals(latitude, tune.getLatitude());
+        assertEquals(latitude, tune.getLatitude(), 0.0001);
     }
 
     public void testLatitudeVerySmall() {
@@ -603,7 +658,26 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "latitude", expectedLatitude );
-        assertEquals(latitude, tune.getLatitude());
+        assertEquals(latitude, tune.getLatitude(), 0.0001);
+    }
+
+    public void testLatitudeNull() {
+        // don't set latitude, will be null
+        tune.measureEvent("registration");
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        assertTrue( "params default values failed " + params, params.checkDefaultValues() );
+        assertNoValueForKey("latitude");
+        assertEquals(0, tune.getLatitude(), 0.0001);
+    }
+
+    public void testAppVersionNull() {
+        tune.measureEvent("registration");
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        assertTrue( "params default values failed " + params, params.checkDefaultValues() );
+        assertKeyValue("app_version", "0");
+        assertEquals(0, tune.getAppVersion());
     }
 
     public void testAppAdTrackingTrue() {
@@ -616,7 +690,7 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "app_ad_tracking", expectedAppAdTracking );
-        assertEquals(appAdTracking, tune.getAppAdTrackingEnabled());
+        assertTrue(tune.getAppAdTrackingEnabled());
     }
 
     public void testAppAppAdTrackingFalse() {
@@ -629,7 +703,28 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "app_ad_tracking", expectedAppAdTracking );
-        assertEquals(appAdTracking, tune.getAppAdTrackingEnabled());
+        assertFalse(tune.getAppAdTrackingEnabled());
+    }
+
+    public void testAppAppAdTrackingNull() {
+        // do not set app tracking enabled so that it is null
+        tune.measureEvent("registration");
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        assertTrue( "params default values failed " + params, params.checkDefaultValues() );
+        assertNoValueForKey("app_ad_tracking");
+        assertFalse(tune.getAppAdTrackingEnabled());
+    }
+
+    public void testTuneSetLocationDisableAutoCollect() {
+        final double latitude = 87;
+        final double longitude = -122;
+
+        tune.setShouldAutoCollectDeviceLocation(true);
+        assertTrue(tune.locationListener.isListening());
+
+        tune.setLocation(new TuneLocation(longitude, latitude));
+        assertFalse(tune.locationListener.isListening());
     }
 
     public void testTuneLocation() {
@@ -657,7 +752,7 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "longitude", expectedLongitude );
-        assertEquals(longitude, tune.getLongitude());
+        assertEquals(longitude, tune.getLongitude(), 0.0001);
     }
 
     public void testLongitudeValidLtZero() {
@@ -670,7 +765,7 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "longitude", expectedLongitude );
-        assertEquals(longitude, tune.getLongitude());
+        assertEquals(longitude, tune.getLongitude(), 0.0001);
     }
 
     public void testLongitudeValidLarge() {
@@ -683,7 +778,7 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "longitude", expectedLongitude );
-        assertEquals(longitude, tune.getLongitude());
+        assertEquals(longitude, tune.getLongitude(), 0.0001);
     }
 
     public void testLongitudeZero() {
@@ -696,7 +791,7 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "longitude", expectedLongitude );
-        assertEquals(longitude, tune.getLongitude());
+        assertEquals(longitude, tune.getLongitude(), 0.0001);
     }
 
     public void testLongitudeVeryLarge() {
@@ -709,7 +804,7 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "longitude", expectedLongitude );
-        assertEquals(longitude, tune.getLongitude());
+        assertEquals(longitude, tune.getLongitude(), 0.0001);
     }
 
     public void testLongitudeVerySmall() {
@@ -722,7 +817,17 @@ public class ParametersTests extends TuneUnitTest {
         
         assertTrue( "params default values failed " + params, params.checkDefaultValues() );
         assertKeyValue( "longitude", expectedLongitude );
-        assertEquals(longitude, tune.getLongitude());
+        assertEquals(longitude, tune.getLongitude(), 0.0001);
+    }
+
+    public void testLongitudeNull() {
+        // do not set longitude
+        tune.measureEvent("registration");
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        assertTrue( "params default values failed " + params, params.checkDefaultValues() );
+        assertNoValueForKey("longitude");
+        assertEquals(0.0, tune.getLongitude(), 0.0001);
     }
 
     public void testSetLocationStopsProximityMonitoring() throws Exception {

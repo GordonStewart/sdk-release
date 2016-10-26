@@ -29,6 +29,7 @@
 
 -(void) setSmartWhere:(id) smartWhere;
 -(id) getSmartWhere;
+-(void) setConfig:(NSDictionary*)config;
 +(void) invalidateForTesting;
 @end
 
@@ -160,6 +161,53 @@
     }]];
     
     [mockTestObj startMonitoringWithTuneAdvertiserId:@"aid" tuneConversionKey:@"key"];
+    
+    [mockTestObj verify];
+}
+
+#pragma mark - setDebugMode tests
+
+- (void)testSetDebugModeSetsDebugLoggingConfigAndInvokesSmartWhereConfigWhenYES {
+    [testObj setSmartWhere:mockSmartWhere];
+    id mockTestObj = OCMPartialMock(testObj);
+    [[mockTestObj expect] setConfig: [OCMArg checkWithBlock:^BOOL(id value){
+        if ([value isKindOfClass:[NSDictionary class]]){
+            NSDictionary* actualConfig = value;
+            if (actualConfig[@"DEBUG_LOGGING"] && [actualConfig[@"DEBUG_LOGGING"] isEqual: @"true"]){
+                return YES;
+            }
+        }
+        return NO;
+    }]];
+    
+    [(TuneProximityHelper*)mockTestObj setDebugMode:YES];
+    
+    [mockTestObj verify];
+}
+
+- (void)testSetDebugModeSetsDebugLoggingConfigAndInvokesSmartWhereConfigWhenNO {
+    [testObj setSmartWhere:mockSmartWhere];
+    id mockTestObj = OCMPartialMock(testObj);
+    [[mockTestObj expect] setConfig: [OCMArg checkWithBlock:^BOOL(id value){
+        if ([value isKindOfClass:[NSDictionary class]]){
+            NSDictionary* actualConfig = value;
+            if (actualConfig[@"DEBUG_LOGGING"] && [actualConfig[@"DEBUG_LOGGING"] isEqual: @"false"]){
+                return YES;
+            }
+        }
+        return NO;
+    }]];
+    
+    [(TuneProximityHelper*)mockTestObj setDebugMode:NO];
+    
+    [mockTestObj verify];
+}
+
+- (void)testSetDebugModeDoesntAttemptWhenNotInstanciated {
+    id mockTestObj = OCMPartialMock(testObj);
+    [[mockTestObj reject] setConfig: OCMOCK_ANY];
+    
+    [(TuneProximityHelper*)mockTestObj setDebugMode:NO];
     
     [mockTestObj verify];
 }

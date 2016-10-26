@@ -139,6 +139,12 @@ static TuneTracker *_sharedManager = nil;
 + (void)setDebugMode:(BOOL)enable {
     [opQueue addOperationWithBlock:^{
         [TuneManager currentManager].configuration.debugMode = @(enable);
+#if TARGET_OS_IOS
+        if ([TuneProximityHelper isProximityInstalled]){            
+            TuneProximityHelper* tuneProximityHelper = [TuneProximityHelper getInstance];
+            [tuneProximityHelper setDebugMode:enable];
+        }
+#endif
     }];
 }
 
@@ -247,18 +253,18 @@ static TuneTracker *_sharedManager = nil;
 + (void)setShouldAutoCollectDeviceLocation:(BOOL)autoCollect {
     [opQueue addOperationWithBlock:^{
         [[TuneManager currentManager].configuration setShouldAutoCollectDeviceLocation:autoCollect];
-    }];
 #if TARGET_OS_IOS
-    if ([TuneProximityHelper isProximityInstalled]){
-        if (!autoCollect){
-            [[TuneProximityHelper getInstance] stopMonitoring];
-        } else {
-            [[TuneProximityHelper getInstance]
-             startMonitoringWithTuneAdvertiserId:[[TuneManager currentManager].userProfile advertiserId]
-             tuneConversionKey:[[TuneManager currentManager].userProfile conversionKey]];
+        if ([TuneProximityHelper isProximityInstalled]){
+            if (!autoCollect){
+                [[TuneProximityHelper getInstance] stopMonitoring];
+            } else {
+                [[TuneProximityHelper getInstance]
+                 startMonitoringWithTuneAdvertiserId:[[TuneManager currentManager].userProfile advertiserId]
+                 tuneConversionKey:[[TuneManager currentManager].userProfile conversionKey]];
+            }
         }
-    }
 #endif
+    }];
 }
 
 #if !TARGET_OS_WATCH

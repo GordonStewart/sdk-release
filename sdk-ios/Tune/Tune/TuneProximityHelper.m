@@ -25,26 +25,41 @@ static dispatch_once_t proximityHelperToken;
 - (void)startMonitoringWithTuneAdvertiserId:(NSString *)aid tuneConversionKey:(NSString *)key{
     @synchronized(self) {
         if (_smartWhere == nil){
-            NSMutableDictionary *config = [NSMutableDictionary new];
-            
-            config[@"ENABLE_NOTIFICATION_PERMISSION_PROMPTING"] = @"false";
-            config[@"ENABLE_LOCATION_PERMISSION_PROMPTING"] = @"false";
-            config[@"ENABLE_GEOFENCE_RANGING"] = @"true";
-            config[@"DELEGATE_NOTIFICATIONS"] = @"true";
-            if ([[TuneManager currentManager].configuration.debugMode boolValue]){
-                config[@"DEBUG_LOGGING"] = @"true";
-            }
-            [self startProximityMonitoringWithAppId:aid withApiKey:aid withApiSecret:key withConfig:config];
+            _aid = aid;
+            _key = key;
+            [self performSelectorOnMainThread:@selector(startMonitoring) withObject:nil waitUntilDone:YES];
         }
     }
 }
 
+-(void) startMonitoring{
+    NSMutableDictionary *config = [NSMutableDictionary new];
+    
+    config[@"ENABLE_NOTIFICATION_PERMISSION_PROMPTING"] = @"false";
+    config[@"ENABLE_LOCATION_PERMISSION_PROMPTING"] = @"false";
+    config[@"ENABLE_GEOFENCE_RANGING"] = @"true";
+    config[@"DELEGATE_NOTIFICATIONS"] = @"true";
+    if ([[TuneManager currentManager].configuration.debugMode boolValue]){
+        config[@"DEBUG_LOGGING"] = @"true";
+    }
+    [self startProximityMonitoringWithAppId:_aid withApiKey:_aid withApiSecret:_key withConfig:config];
+}
 
 -(void) stopMonitoring{
     @synchronized(self) {
         if (_smartWhere){
             [_smartWhere invalidate];
             _smartWhere = nil;
+        }
+    }
+}
+
+-(void) setDebugMode:(BOOL) mode{
+    @synchronized(self) {
+        if (_smartWhere){
+            NSMutableDictionary *config = [NSMutableDictionary new];
+            config[@"DEBUG_LOGGING"] = (mode) ? @"true" : @"false";
+            [self setConfig:config];
         }
     }
 }
@@ -81,6 +96,23 @@ static dispatch_once_t proximityHelperToken;
     
     [_smartWhere performSelector:@selector(setDelegate:) withObject:self];
 #pragma clang diagnostic pop
+}
+
+-(void) setConfig:(NSDictionary*) config{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    SEL selSetConfig = @selector(configWithDictionary:);
+    Class classProximity = NSClassFromString(@"SmartWhere");
+    
+    NSMethodSignature* signature = [classProximity methodSignatureForSelector:selSetConfig];
+    NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:signature];
+    [invocation retainArguments];
+    [invocation setTarget:classProximity];
+    [invocation setSelector:selSetConfig];
+    [invocation setArgument:&config atIndex:2];
+    [invocation invoke];
+#pragma clang diagnostic pop
+
 }
 
 #pragma mark - handle smartWhere location events

@@ -504,6 +504,27 @@
     [proximityHelperMock verify];
 }
 
+#pragma mark - setDebugMode tests
+- (void)testSetDebugModeSetsProximityDebugModeWhenInstalled{   
+    [[[[proximityHelperMock expect] classMethod] andReturnValue:OCMOCK_VALUE(YES)] isProximityInstalled];
+    [(TuneProximityHelper*)[proximityHelperMock expect] setDebugMode:YES];
+    
+    [Tune setDebugMode:YES];
+    waitForQueuesToFinish();
+    
+    [proximityHelperMock verify];
+}
+
+- (void)testSetDebugModeDoesntSetsProximityDebugModeWhenInstalled{
+    [[[[proximityHelperMock expect] classMethod] andReturnValue:OCMOCK_VALUE(NO)] isProximityInstalled];
+    [(TuneProximityHelper*)[proximityHelperMock reject] setDebugMode:YES];
+    
+    [Tune setDebugMode:YES];
+    waitForQueuesToFinish();
+    
+    [proximityHelperMock verify];
+}
+
 #pragma mark - Currency code
 
 - (void)testCurrencyCode {

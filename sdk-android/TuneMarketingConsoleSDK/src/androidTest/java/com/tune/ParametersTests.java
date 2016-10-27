@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.UUID;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -924,6 +926,44 @@ public class ParametersTests extends TuneUnitTest {
         verify(mockTuneProximity, never()).startMonitoring(mContext, TuneTestConstants.advertiserId, TuneTestConstants.conversionKey, false);
 
     }
+
+    public void testSetDebugModeTrueSetsProximityDebugModeTrueWhenInstalled() throws Exception {
+        TuneProximity mockTuneProximity = mock(TuneProximity.class);
+        TuneProximity.setInstance(mockTuneProximity);
+        when(mockTuneProximity.isProximityInstalled()).thenReturn(true);
+
+        tune.setDebugMode(true);
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        verify(mockTuneProximity).isProximityInstalled();
+        verify(mockTuneProximity).setDebugMode(mContext, true);
+    }
+
+    public void testSetDebugModeFalseSetsProximityDebugModeFalseWhenInstalled() throws Exception {
+        TuneProximity mockTuneProximity = mock(TuneProximity.class);
+        TuneProximity.setInstance(mockTuneProximity);
+        when(mockTuneProximity.isProximityInstalled()).thenReturn(true);
+
+        tune.setDebugMode(false);
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        verify(mockTuneProximity).isProximityInstalled();
+        verify(mockTuneProximity).setDebugMode(mContext, false);
+    }
+
+    public void testSetDebugModeDoesntSetsProximityDebugModeWhenInstalled() throws Exception {
+        TuneProximity mockTuneProximity = mock(TuneProximity.class);
+        TuneProximity.setInstance(mockTuneProximity);
+        when(mockTuneProximity.isProximityInstalled()).thenReturn(false);
+
+        tune.setDebugMode(false);
+        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        verify(mockTuneProximity).isProximityInstalled();
+        verify(mockTuneProximity, never()).setDebugMode(any(Context.class), eq(true));
+        verify(mockTuneProximity, never()).setDebugMode(any(Context.class), eq(false));
+    }
+
 
     public void testMacAddress() {
         String expectedMacAddress = "AA:BB:CC:DD:EE:FF";

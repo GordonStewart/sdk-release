@@ -142,6 +142,24 @@ public class TuneProximityTests extends TuneUnitTest  {
 
         assertTrue(FakeProximityControl.hasStopServiceBeenCalled);
     }
+
+    public void testSetDebugModeSetsDebugLoggingWhenTrue() throws Exception {
+        testObj.setDebugMode(context, true);
+
+        HashMap actualConfig = FakeProximityControl.capturedConfig;
+        assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
+        assertTrue(actualConfig.containsKey("DEBUG_LOG"));
+        assertEquals(actualConfig.get("DEBUG_LOG"), "true");
+    }
+
+    public void testSetDebugModeSetsDebugLoggingWhenFalse() throws Exception {
+        testObj.setDebugMode(context, false);
+
+        HashMap actualConfig = FakeProximityControl.capturedConfig;
+        assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
+        assertTrue(actualConfig.containsKey("DEBUG_LOG"));
+        assertEquals(actualConfig.get("DEBUG_LOG"), "false");
+    }
 }
 
 class TuneProximityForTest extends TuneProximity{

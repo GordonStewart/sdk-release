@@ -22,8 +22,6 @@ public class TuneProximityNotificationService extends IntentService {
         if (intent != null && intent.getAction() != null && intent.getAction().equals("proximity-notification")) {
             Object proximityNotification = (intent.hasExtra("proximityNotification")) ? intent.getSerializableExtra("proximityNotification") : null;
             if (proximityNotification != null){
-                @SuppressWarnings("unused")
-                Object event =  getEventFromProximityNotification(proximityNotification);
                 TuneUtils.log("TuneProximityNotificationService: " + getTitleFromProximityNotification(proximityNotification));
             } else {
                 TuneUtils.log("TuneProximityNotificationService: proximityNotification is null");
@@ -36,16 +34,6 @@ public class TuneProximityNotificationService extends IntentService {
         try {
             getTitle = proximityNotification.getClass().getMethod("getTitle");
             return (String) getTitle.invoke(proximityNotification);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private Object getEventFromProximityNotification(Object proximityNotification) {
-        Method getEvent;
-        try {
-            getEvent = proximityNotification.getClass().getMethod("getEvent");
-            return getEvent.invoke(proximityNotification);
         } catch (Exception e) {
             return null;
         }

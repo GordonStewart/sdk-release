@@ -2,6 +2,7 @@ package com.tune;
 
 import android.content.Context;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
@@ -81,6 +82,22 @@ public class TuneProximity {
         }
     }
 
+    public void setDebugMode(Context context, final boolean mode) {
+        Class targetClass = classForName(COM_PROXIMITY_LIBRARY_PROXIMITYCONTROL);
+        if (targetClass != null){
+            HashMap<String, String> config = new HashMap<String,String>(){{
+                put("DEBUG_LOG",(mode) ? "true": "false");
+            }};
+            try {
+                @SuppressWarnings("unchecked")
+                Method configureService = targetClass.getMethod("configureService", Context.class, HashMap.class);
+                configureService.invoke(targetClass, context, config);
+            } catch (Exception e) {
+                TuneUtils.log("TuneProximity.setDebugMode: " + e.getLocalizedMessage());
+            }
+        }
+    }
+
     protected static synchronized void setInstance(TuneProximity tuneProximity){
         instance = tuneProximity;
     }
@@ -92,5 +109,4 @@ public class TuneProximity {
             return null;
         }
     }
-
 }

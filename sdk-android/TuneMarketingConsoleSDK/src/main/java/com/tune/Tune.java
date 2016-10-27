@@ -1280,7 +1280,6 @@ public class Tune {
             @Override
             public void run() {
                 params.setLocation(location);
-                stopLocationMonitoring();
             }
         });
     }
@@ -1508,6 +1507,10 @@ public class Tune {
         debugMode = debug;
         pubQueue.execute(new Runnable() { public void run() {
             params.setDebugMode(debug);
+            TuneProximity tuneProximity = TuneProximity.getInstance();
+            if (tuneProximity.isProximityInstalled()){
+                tuneProximity.setDebugMode(mContext, debug);
+            }
         }});
         if (debug) {
             TuneDebugLog.setLogLevel(Log.DEBUG);

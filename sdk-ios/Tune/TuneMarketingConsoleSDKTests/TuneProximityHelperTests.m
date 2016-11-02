@@ -139,6 +139,40 @@
     [mockTuneManager verify];
 }
 
+- (void)testStartMonitoringDoesntStartWhenAidIsNil{
+    [self setTuneUtilsGetClassFromStringToAnObject];
+    
+    [self setTuneConfigurationMockWithDebug:NO];
+    
+    id mockTestObj = OCMPartialMock(testObj);
+    [[mockTestObj reject] startProximityMonitoringWithAppId: OCMOCK_ANY
+                                                 withApiKey: OCMOCK_ANY
+                                              withApiSecret: OCMOCK_ANY
+                                                 withConfig: OCMOCK_ANY];
+    
+    [mockTestObj startMonitoringWithTuneAdvertiserId:nil tuneConversionKey:@"key"];
+    
+    [mockTestObj verify];
+    [mockTuneManager verify];
+}
+
+- (void)testStartMonitoringDoesntStartWhenKeyIsNil{
+    [self setTuneUtilsGetClassFromStringToAnObject];
+    
+    [self setTuneConfigurationMockWithDebug:NO];
+    
+    id mockTestObj = OCMPartialMock(testObj);
+    [[mockTestObj reject] startProximityMonitoringWithAppId: OCMOCK_ANY
+                                                 withApiKey: OCMOCK_ANY
+                                              withApiSecret: OCMOCK_ANY
+                                                 withConfig: OCMOCK_ANY];
+    
+    [mockTestObj startMonitoringWithTuneAdvertiserId:@"aid" tuneConversionKey:nil];
+    
+    [mockTestObj verify];
+    [mockTuneManager verify];
+}
+
 - (void)testStartMonitoringSetsDebugLoggingWhenTuneLoggingIsEnabled {
     [self setTuneConfigurationMockWithDebug:YES];
     [self setTuneUtilsGetClassFromStringToAnObject];

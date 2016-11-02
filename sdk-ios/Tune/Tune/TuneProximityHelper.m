@@ -24,7 +24,7 @@ static dispatch_once_t proximityHelperToken;
 
 - (void)startMonitoringWithTuneAdvertiserId:(NSString *)aid tuneConversionKey:(NSString *)key{
     @synchronized(self) {
-        if (_smartWhere == nil){
+        if (_smartWhere == nil && aid != nil && key != nil){
             _aid = aid;
             _key = key;
             [self performSelectorOnMainThread:@selector(startMonitoring) withObject:nil waitUntilDone:YES];

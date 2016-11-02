@@ -124,11 +124,14 @@ static TuneTracker *_sharedManager = nil;
         tuneManager.configurationPlayer = configurationPlayer;
     }
 
+    
 #if TARGET_OS_IOS 
-    if ([TuneManager currentManager].configuration.shouldAutoCollectDeviceLocation && [TuneProximityHelper isProximityInstalled]){
-        TuneProximityHelper* tuneProximityHelper = [TuneProximityHelper getInstance];
-        [tuneProximityHelper startMonitoringWithTuneAdvertiserId:aid tuneConversionKey:key];
-    }
+    [opQueue addOperationWithBlock:^{
+        if ([TuneManager currentManager].configuration.shouldAutoCollectDeviceLocation && [TuneProximityHelper isProximityInstalled]){
+            TuneProximityHelper* tuneProximityHelper = [TuneProximityHelper getInstance];
+            [tuneProximityHelper startMonitoringWithTuneAdvertiserId:aid tuneConversionKey:key];
+        }
+    }];
 #endif
     
     [[self sharedManager] startTracker];

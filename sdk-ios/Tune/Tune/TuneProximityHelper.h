@@ -13,8 +13,8 @@
 
 @interface TuneProximityHelper : NSObject <SmartWhereDelegate>
 
-@property NSString* aid;
-@property NSString* key;
+@property (nonatomic, copy) NSString* aid;
+@property (nonatomic, copy) NSString* key;
 
 +(BOOL) isProximityInstalled;
 -(void) startMonitoringWithTuneAdvertiserId:(NSString *)aid tuneConversionKey:(NSString *)key;

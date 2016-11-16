@@ -39,7 +39,7 @@ public class TuneProximityNotificationServiceTests extends TuneUnitTest {
 
         testObj.onHandleIntent(notificationIntent);
 
-        assertTrue(FakeProximityNotification.hasGetEventBeenCalled);
+        assertTrue(FakeProximityNotification.hasGetTitleBeenCalled);
     }
 
     //  Helpers

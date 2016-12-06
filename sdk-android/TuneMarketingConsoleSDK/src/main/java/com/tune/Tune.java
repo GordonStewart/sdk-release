@@ -193,10 +193,17 @@ public class Tune {
     }
 
     private void startLocationMonitoring() {
-        TuneProximity tuneProximity = TuneProximity.getInstance();
-        if (tuneProximity.isProximityInstalled()){
-            tuneProximity.startMonitoring(mContext, params.getAdvertiserId(), params.getConversionKey(), isInDebugMode());
-        }
+        pubQueue.execute(new Runnable() {
+             @Override
+             public void run() {
+                 TuneProximity tuneProximity = TuneProximity.getInstance();
+                 if (tuneProximity.isProximityInstalled()){
+                     tuneProximity.startMonitoring(mContext, params.getAdvertiserId(), params.getConversionKey(), isInDebugMode());
+                 }
+             }
+            }
+        );
+
     }
 
     static void setInstance(Tune newTune) {
@@ -1254,14 +1261,8 @@ public class Tune {
      * @param location the device location
      */
     public void setLocation(final Location location) {
-        if (location == null) {
-            TuneDebugLog.e(TuneConstants.TAG, "Location may not be null");
-            return;
-        }
-        pubQueue.execute(new Runnable() { public void run() {
-            params.setLocation(new TuneLocation(location));
-            stopLocationMonitoring();
-        }});
+        TuneLocation loc = null == location ? null : new TuneLocation(location);
+        setLocation(loc);
     }
 
     /**
@@ -1285,11 +1286,17 @@ public class Tune {
     }
 
     private void stopLocationMonitoring() {
-        TuneProximity tuneProximity = TuneProximity.getInstance();
-        if (tuneProximity.isProximityInstalled()){
-            tuneProximity.stopMonitoring(mContext);
-        }
+        pubQueue.execute(new Runnable() {
+            @Override
+            public void run() {
+                TuneProximity tuneProximity = TuneProximity.getInstance();
+                if (tuneProximity.isProximityInstalled()){
+                    tuneProximity.stopMonitoring(mContext);
+                }
+            }
+        });
     }
+
     /**
      * Sets the device longitude.
      * @param longitude the device longitude
@@ -1591,6 +1598,7 @@ public class Tune {
             locationListener.stopListening();
             stopLocationMonitoring();
         } else {
+            locationListener.startListening();
             startLocationMonitoring();
         }
     }

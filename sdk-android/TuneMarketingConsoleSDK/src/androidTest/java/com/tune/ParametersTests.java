@@ -7,6 +7,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static org.mockito.Matchers.any;
@@ -833,24 +835,28 @@ public class ParametersTests extends TuneUnitTest {
     }
 
     public void testSetLocationStopsProximityMonitoring() throws Exception {
+        shutdownWaitAndRecreatePubQueue();
         TuneProximity mockTuneProximity = mock(TuneProximity.class);
         TuneProximity.setInstance(mockTuneProximity);
         when(mockTuneProximity.isProximityInstalled()).thenReturn(true);
 
         tune.setLocation(new Location("mockProvider"));
-        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        shutdownWaitAndRecreatePubQueue();
 
         verify(mockTuneProximity).isProximityInstalled();
         verify(mockTuneProximity).stopMonitoring(mContext);
     }
 
     public void testSetLocationDoesntStopProximityMonitoringIfNotInstalled() throws Exception {
+        shutdownWaitAndRecreatePubQueue();
         TuneProximity mockTuneProximity = mock(TuneProximity.class);
         TuneProximity.setInstance(mockTuneProximity);
         when(mockTuneProximity.isProximityInstalled()).thenReturn(false);
 
         tune.setLocation(new Location("mockProvider"));
-        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        shutdownWaitAndRecreatePubQueue();
 
         verify(mockTuneProximity).isProximityInstalled();
         verify(mockTuneProximity, never()).stopMonitoring(mContext);
@@ -858,24 +864,27 @@ public class ParametersTests extends TuneUnitTest {
     }
 
     public void testSetLocationWithTuneLocationStopsProximityMonitoring() throws Exception {
+        shutdownWaitAndRecreatePubQueue();
         TuneProximity mockTuneProximity = mock(TuneProximity.class);
         TuneProximity.setInstance(mockTuneProximity);
         when(mockTuneProximity.isProximityInstalled()).thenReturn(true);
 
         tune.setLocation(new TuneLocation(new Location("mockProvider")));
-        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        shutdownWaitAndRecreatePubQueue();
 
         verify(mockTuneProximity).isProximityInstalled();
         verify(mockTuneProximity).stopMonitoring(mContext);
     }
 
     public void testSetLocationWithTuneLocationDoesntStopProximityMonitoringIfNotInstalled() throws Exception {
+        shutdownWaitAndRecreatePubQueue();
         TuneProximity mockTuneProximity = mock(TuneProximity.class);
         TuneProximity.setInstance(mockTuneProximity);
         when(mockTuneProximity.isProximityInstalled()).thenReturn(false);
 
         tune.setLocation(new TuneLocation(new Location("mockProvider")));
-        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+        shutdownWaitAndRecreatePubQueue();
 
         verify(mockTuneProximity).isProximityInstalled();
         verify(mockTuneProximity, never()).stopMonitoring(mContext);
@@ -883,44 +892,56 @@ public class ParametersTests extends TuneUnitTest {
     }
 
     public void testSetShouldAutoCollectDeviceLocationStopsProximityMonitoringWhenSetToFalse() throws Exception {
+        shutdownWaitAndRecreatePubQueue();
         TuneProximity mockTuneProximity = mock(TuneProximity.class);
         TuneProximity.setInstance(mockTuneProximity);
         when(mockTuneProximity.isProximityInstalled()).thenReturn(true);
 
         tune.setShouldAutoCollectDeviceLocation(false);
+
+        shutdownWaitAndRecreatePubQueue();
 
         verify(mockTuneProximity).isProximityInstalled();
         verify(mockTuneProximity).stopMonitoring(mContext);
     }
 
     public void testSetShouldAutoCollectDeviceLocationDoesntAttemptToStopProximityMonitoringWhenSetToFalseButNotInstalled() throws Exception {
+        shutdownWaitAndRecreatePubQueue();
         TuneProximity mockTuneProximity = mock(TuneProximity.class);
         TuneProximity.setInstance(mockTuneProximity);
         when(mockTuneProximity.isProximityInstalled()).thenReturn(false);
 
         tune.setShouldAutoCollectDeviceLocation(false);
 
+        shutdownWaitAndRecreatePubQueue();
+
         verify(mockTuneProximity).isProximityInstalled();
         verify(mockTuneProximity, never()).stopMonitoring(mContext);
     }
 
     public void testSetShouldAutoCollectDeviceLocationStartsProximityMonitoringWhenSetToTrue() throws Exception {
+        shutdownWaitAndRecreatePubQueue();
         TuneProximity mockTuneProximity = mock(TuneProximity.class);
         TuneProximity.setInstance(mockTuneProximity);
         when(mockTuneProximity.isProximityInstalled()).thenReturn(true);
 
         tune.setShouldAutoCollectDeviceLocation(true);
 
+        shutdownWaitAndRecreatePubQueue();
+
         verify(mockTuneProximity).isProximityInstalled();
         verify(mockTuneProximity).startMonitoring(mContext, TuneTestConstants.advertiserId, TuneTestConstants.conversionKey, false);
     }
 
     public void testSetShouldAutoCollectDeviceLocationDoesntAttemptToStartProximityMonitoringWhenSetToTrueButNotInstalled() throws Exception {
+        shutdownWaitAndRecreatePubQueue();
         TuneProximity mockTuneProximity = mock(TuneProximity.class);
         TuneProximity.setInstance(mockTuneProximity);
         when(mockTuneProximity.isProximityInstalled()).thenReturn(false);
 
         tune.setShouldAutoCollectDeviceLocation(true);
+
+        shutdownWaitAndRecreatePubQueue();
 
         verify(mockTuneProximity).isProximityInstalled();
         verify(mockTuneProximity, never()).startMonitoring(mContext, TuneTestConstants.advertiserId, TuneTestConstants.conversionKey, false);
@@ -928,24 +949,27 @@ public class ParametersTests extends TuneUnitTest {
     }
 
     public void testSetDebugModeTrueSetsProximityDebugModeTrueWhenInstalled() throws Exception {
+        shutdownWaitAndRecreatePubQueue();
         TuneProximity mockTuneProximity = mock(TuneProximity.class);
         TuneProximity.setInstance(mockTuneProximity);
         when(mockTuneProximity.isProximityInstalled()).thenReturn(true);
 
         tune.setDebugMode(true);
-        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+
+        shutdownWaitAndRecreatePubQueue();
 
         verify(mockTuneProximity).isProximityInstalled();
         verify(mockTuneProximity).setDebugMode(mContext, true);
     }
 
     public void testSetDebugModeFalseSetsProximityDebugModeFalseWhenInstalled() throws Exception {
+        shutdownWaitAndRecreatePubQueue();
         TuneProximity mockTuneProximity = mock(TuneProximity.class);
         TuneProximity.setInstance(mockTuneProximity);
         when(mockTuneProximity.isProximityInstalled()).thenReturn(true);
 
         tune.setDebugMode(false);
-        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+        shutdownWaitAndRecreatePubQueue();
 
         verify(mockTuneProximity).isProximityInstalled();
         verify(mockTuneProximity).setDebugMode(mContext, false);
@@ -957,7 +981,7 @@ public class ParametersTests extends TuneUnitTest {
         when(mockTuneProximity.isProximityInstalled()).thenReturn(false);
 
         tune.setDebugMode(false);
-        sleep( TuneTestConstants.PARAMTEST_SLEEP );
+        shutdownWaitAndRecreatePubQueue();
 
         verify(mockTuneProximity).isProximityInstalled();
         verify(mockTuneProximity, never()).setDebugMode(any(Context.class), eq(true));
@@ -1255,5 +1279,11 @@ public class ParametersTests extends TuneUnitTest {
         assertTrue( "should have read user id", testId.equals( tune.getUserId() ) );
         assertTrue( "should have read user email", testEmail.equals( tune.getUserEmail() ) );
         assertTrue( "should have read user name", testName.equals( tune.getUserName() ) );
+    }
+
+    private void shutdownWaitAndRecreatePubQueue() throws InterruptedException {
+        tune.getPubQueue().shutdown();
+        tune.getPubQueue().awaitTermination(60, TimeUnit.SECONDS);
+        tune.pubQueue = Executors.newSingleThreadExecutor();
     }
 }

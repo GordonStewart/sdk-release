@@ -17,6 +17,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ParametersTests extends TuneUnitTest {
     @Override
@@ -725,8 +727,6 @@ public class ParametersTests extends TuneUnitTest {
         final double longitude = -122;
 
         tune.setShouldAutoCollectDeviceLocation(true);
-        assertTrue(tune.locationListener.isListening());
-
         tune.setLocation(new TuneLocation(longitude, latitude));
         assertFalse(tune.locationListener.isListening());
     }
@@ -1281,9 +1281,29 @@ public class ParametersTests extends TuneUnitTest {
         assertTrue( "should have read user name", testName.equals( tune.getUserName() ) );
     }
 
+    // Build and locale are required for AdWords attribution
+    public void testDeviceBuildAutoPopulated() {
+        assertNotNull(tune.getDeviceBuild());
+    }
+
+    public void testLocaleAutoPopulated() {
+        assertNotNull(tune.getLocale());
+
+        // Locale should be in format "{language}_{country}"
+        // where {language} is some unstable language code: https://developer.android.com/reference/java/util/Locale.html#getLanguage()
+        // and {country} is empty string, an uppercase ISO 3166 2-letter code, or a UN M.49 3-digit code: https://developer.android.com/reference/java/util/Locale.html#getCountry()
+        String localePattern = "^[a-z]*_(^$|[A-Z]{2}|[0-9]{3})$";
+
+        Pattern pattern = Pattern.compile(localePattern);
+        Matcher matcher = pattern.matcher(tune.getLocale());
+
+        assertTrue(matcher.matches());
+    }
+
     private void shutdownWaitAndRecreatePubQueue() throws InterruptedException {
         tune.getPubQueue().shutdown();
         tune.getPubQueue().awaitTermination(60, TimeUnit.SECONDS);
         tune.pubQueue = Executors.newSingleThreadExecutor();
     }
+
 }

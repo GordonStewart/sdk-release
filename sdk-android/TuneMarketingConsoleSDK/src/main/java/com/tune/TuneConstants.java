@@ -44,6 +44,9 @@ public class TuneConstants {
     // TUNE IAM API VERSION
     public static final String IAM_API_VERSION = "v3";
 
+    public static final String STRING_TRUE = "true";
+    public static final String STRING_FALSE = "false";
+
     // TUNE Android SDK version number
     public static final String SDK_VERSION = "4.8.1";
     // Debug log tag

@@ -39,6 +39,7 @@ import com.tune.ma.push.TunePushInfo;
 import com.tune.ma.push.settings.TuneNotificationBuilder;
 import com.tune.ma.utils.TuneDebugLog;
 import com.tune.ma.utils.TuneOptional;
+import com.tune.smartwhere.TuneSmartWhere;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -154,7 +155,7 @@ public class Tune {
      * @return Tune instance with initialized values
      */
     public static synchronized Tune init(Context context, String advertiserId, String conversionKey, boolean turnOnIAM) {
-        return init(context, advertiserId, conversionKey, turnOnIAM, null);
+        return init(context, advertiserId, conversionKey, turnOnIAM, new TuneConfiguration());
     }
 
     /**
@@ -192,6 +193,7 @@ public class Tune {
                 if (tune.collectLocation) {
                     // Get initial location
                     tune.locationListener.startListening();
+                    tune.startSmartWhereLocationMonitoring();
                 }
             }
         }
@@ -1383,16 +1385,6 @@ public class Tune {
     }
 
     /**
-     * Sets the device latitude.
-     * @param latitude the device latitude
-     */
-    public void setLatitude(final double latitude) {
-        pubQueue.execute(new Runnable() { public void run() {
-            params.setLatitude(Double.toString(latitude));
-        }});
-    }
-
-    /**
      * Sets the device locale
      * @param locale the device locale
      */
@@ -1407,13 +1399,8 @@ public class Tune {
      * @param location the device location
      */
     public void setLocation(final Location location) {
-        if (location == null) {
-            TuneDebugLog.e(TuneConstants.TAG, "Location may not be null");
-            return;
-        }
-        pubQueue.execute(new Runnable() { public void run() {
-            params.setLocation(new TuneLocation(location));
-        }});
+        TuneLocation loc = null == location ? null : new TuneLocation(location);
+        setLocation(loc);
     }
 
     /**
@@ -1437,10 +1424,24 @@ public class Tune {
     }
 
     /**
+     * Sets the device latitude.
+     * @param latitude the device latitude
+     */
+    public void setLatitude(final double latitude) {
+        setShouldAutoCollectDeviceLocation(false);
+
+        pubQueue.execute(new Runnable() { public void run() {
+            params.setLatitude(Double.toString(latitude));
+        }});
+    }
+
+    /**
      * Sets the device longitude.
      * @param longitude the device longitude
      */
     public void setLongitude(final double longitude) {
+        setShouldAutoCollectDeviceLocation(false);
+
         pubQueue.execute(new Runnable() { public void run() {
             params.setLongitude(Double.toString(longitude));
         }});
@@ -1682,6 +1683,11 @@ public class Tune {
         debugMode = debug;
         pubQueue.execute(new Runnable() { public void run() {
             params.setDebugMode(debug);
+            TuneSmartWhere tuneProximity = TuneSmartWhere.getInstance();
+            if (tuneProximity.isSmartWhereAvailable()) {
+                tuneProximity.setDebugMode(mContext, debug);
+            }
+
         }});
         if (debug) {
             TuneDebugLog.enableLog();
@@ -1759,10 +1765,12 @@ public class Tune {
      */
     public void setShouldAutoCollectDeviceLocation(boolean autoCollect) {
         collectLocation = autoCollect;
-        if (!collectLocation) {
-            locationListener.stopListening();
-        } else {
+        if (collectLocation) {
             locationListener.startListening();
+            startSmartWhereLocationMonitoring();
+        } else {
+            locationListener.stopListening();
+            stopSmartWhereLocationMonitoring();
         }
     }
 
@@ -2866,4 +2874,34 @@ public class Tune {
 
         TuneManager.getInstance().getProfileManager().clearAllCustomProfileVariables();
     }
+
+    /**********************
+     * SmartWhere Methods *
+     **********************/
+
+    private void startSmartWhereLocationMonitoring() {
+        pubQueue.execute(new Runnable() {
+            @Override
+            public void run() {
+                TuneSmartWhere tuneSmartwhere = TuneSmartWhere.getInstance();
+                if (tuneSmartwhere.isSmartWhereAvailable()) {
+                    tuneSmartwhere.startMonitoring(mContext, params.getAdvertiserId(), params.getConversionKey(), isInDebugMode());
+                }
+            }
+        });
+    }
+
+    private void stopSmartWhereLocationMonitoring() {
+        pubQueue.execute(new Runnable() {
+            @Override
+            public void run() {
+                TuneSmartWhere tuneSmartwhere = TuneSmartWhere.getInstance();
+                if (tuneSmartwhere.isSmartWhereAvailable()) {
+                    tuneSmartwhere.stopMonitoring(mContext);
+                }
+            }
+        });
+    }
+
+
 }

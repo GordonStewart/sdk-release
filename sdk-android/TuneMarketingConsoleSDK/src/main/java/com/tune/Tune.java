@@ -424,7 +424,6 @@ public class Tune {
 
         if (tuneListener != null) {
             tuneListener.enqueuedActionWithRefId(null);
-            tuneListener.enqueuedRequest(link, postBody);
         }
 
         return;
@@ -474,7 +473,6 @@ public class Tune {
 
         if (tuneListener != null) {
             tuneListener.enqueuedActionWithRefId(eventData.getRefId());
-            tuneListener.enqueuedRequest(link + "&data=" + data, postBody);
         }
 
         return;
@@ -500,6 +498,11 @@ public class Tune {
 
         String encData = TuneUrlBuilder.updateAndEncryptData(data, encryption);
         String fullLink = link + "&data=" + encData;
+
+        if (tuneListener != null) {
+            tuneListener.enqueuedRequest(fullLink, postBody);
+        }
+
         JSONObject response = urlRequester.requestUrl(fullLink, postBody, debugMode);
 
         if (response == null) { // The only way we get null from TuneUrlRequester is if *our server* returned HTTP 400. Do not retry.

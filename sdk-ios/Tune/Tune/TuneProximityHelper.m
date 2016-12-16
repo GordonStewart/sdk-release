@@ -47,10 +47,14 @@ static dispatch_once_t proximityHelperToken;
 
 -(void) stopMonitoring{
     @synchronized(self) {
-        if (_smartWhere){
-            [_smartWhere invalidate];
-            _smartWhere = nil;
-        }
+        [self performSelectorOnMainThread:@selector(shutdownMonitoring) withObject:nil waitUntilDone:YES];
+    }
+}
+
+-(void) shutdownMonitoring{
+    if (_smartWhere){
+        [_smartWhere invalidate];
+        _smartWhere = nil;
     }
 }
 

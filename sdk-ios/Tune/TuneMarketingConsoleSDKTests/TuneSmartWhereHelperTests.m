@@ -125,7 +125,7 @@
         return NO;
     }]];
     
-    [mockTestObj startMonitoringWithTuneAdvertiserId:@"aid" tuneConversionKey:@"key"];
+    [mockTestObj startMonitoringWithTuneAdvertiserId:@"aid" tuneConversionKey:@"key" packageName:@"packageName"];
     
     [mockTestObj verify];
 }
@@ -142,7 +142,7 @@
                                               withApiSecret:OCMOCK_ANY
                                                  withConfig:OCMOCK_ANY];
     
-    [mockTestObj startMonitoringWithTuneAdvertiserId:@"aid" tuneConversionKey:@"key"];
+    [mockTestObj startMonitoringWithTuneAdvertiserId:@"aid" tuneConversionKey:@"key" packageName:@"packageName"];
     
     [mockTestObj verify];
     [mockTuneManager verify];
@@ -159,7 +159,7 @@
                                               withApiSecret:OCMOCK_ANY
                                                  withConfig:OCMOCK_ANY];
     
-    [mockTestObj startMonitoringWithTuneAdvertiserId:nil tuneConversionKey:@"key"];
+    [mockTestObj startMonitoringWithTuneAdvertiserId:nil tuneConversionKey:@"key" packageName:@"packageName"];
     
     [mockTestObj verify];
     [mockTuneManager verify];
@@ -176,7 +176,7 @@
                                               withApiSecret:OCMOCK_ANY
                                                  withConfig:OCMOCK_ANY];
     
-    [mockTestObj startMonitoringWithTuneAdvertiserId:@"aid" tuneConversionKey:nil];
+    [mockTestObj startMonitoringWithTuneAdvertiserId:@"aid" tuneConversionKey:nil packageName:@"packageName"];
     
     [mockTestObj verify];
     [mockTuneManager verify];
@@ -201,11 +201,35 @@
         return NO;
     }]];
     
-    [mockTestObj startMonitoringWithTuneAdvertiserId:@"aid" tuneConversionKey:@"key"];
+    [mockTestObj startMonitoringWithTuneAdvertiserId:@"aid" tuneConversionKey:@"key" packageName:@"packageName"];
     
     [mockTestObj verify];
 }
 
+- (void)testStartMonitoringSetsPackageName {
+    [self setTuneConfigurationMockWithDebug:YES];
+    [self setTuneUtilsGetClassFromStringToAnObject];
+    
+    NSString *aid = @"aid";
+    NSString *conversionKey = @"key";
+    NSString *packageName = @"packageName";
+    
+    id mockTestObj = OCMPartialMock(testObj);
+    [[mockTestObj expect] startProximityMonitoringWithAppId:aid
+                                                 withApiKey:aid
+                                              withApiSecret:conversionKey
+                                                 withConfig:[OCMArg checkWithBlock:^BOOL(id value) {
+        if ([value isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *actualConfig = value;
+            return actualConfig[@"PACKAGE_NAME"] && [actualConfig[@"PACKAGE_NAME"] isEqual:packageName];
+        }
+        return NO;
+    }]];
+    
+    [mockTestObj startMonitoringWithTuneAdvertiserId:@"aid" tuneConversionKey:@"key" packageName:packageName];
+    
+    [mockTestObj verify];
+}
 
 #pragma mark - setDebugMode tests
 

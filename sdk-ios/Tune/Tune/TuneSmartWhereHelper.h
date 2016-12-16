@@ -25,6 +25,10 @@
  * TUNE Conversion Key.
  */
 @property (nonatomic, copy) NSString *key;
+/*!
+ * TUNE Package Name.
+ */
+@property (nonatomic, copy) NSString *packageName;
 
 /*!
  * Checks if SmartWhere class is available.
@@ -41,7 +45,7 @@
 /*!
  * Starts SmartWhere proximity monitoring when valid TUNE Advertiser ID and TUNE Conversion Key values are provided. This method should be called only when SmartWhere class is available and geo-location auto-collection has been enabled.
  */
-- (void)startMonitoringWithTuneAdvertiserId:(NSString *)aid tuneConversionKey:(NSString *)key;
+- (void)startMonitoringWithTuneAdvertiserId:(NSString *)aid tuneConversionKey:(NSString *)key packageName:(NSString *)packageName;
 
 /*!
  * Stops SmartWhere proximity monitoring.

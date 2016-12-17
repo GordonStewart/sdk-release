@@ -1487,6 +1487,10 @@ public class Tune {
             } else {
                 params.setPackageName(packageName);
             }
+            TuneSmartWhere tuneProximity = TuneSmartWhere.getInstance();
+            if (tuneProximity.isSmartWhereAvailable()) {
+                tuneProximity.setPackageName(mContext, params.getPackageName());
+            }
         }});
     }
 
@@ -2885,7 +2889,7 @@ public class Tune {
             public void run() {
                 TuneSmartWhere tuneSmartwhere = TuneSmartWhere.getInstance();
                 if (tuneSmartwhere.isSmartWhereAvailable()) {
-                    tuneSmartwhere.startMonitoring(mContext, params.getAdvertiserId(), params.getConversionKey(), isInDebugMode());
+                    tuneSmartwhere.startMonitoring(mContext, params.getAdvertiserId(), params.getConversionKey(), params.getPackageName(), isInDebugMode());
                 }
             }
         });

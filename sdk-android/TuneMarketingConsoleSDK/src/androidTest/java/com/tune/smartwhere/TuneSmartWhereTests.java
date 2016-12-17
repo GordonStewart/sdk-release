@@ -51,7 +51,7 @@ public class TuneSmartWhereTests extends TuneUnitTest {
         String addId = "addId";
         String conversionKey = "conversionKey";
 
-        testObj.startMonitoring(context, addId, conversionKey, false);
+        testObj.startMonitoring(context, addId, conversionKey, "", false);
 
         HashMap actualConfig = FakeProximityControl.capturedConfig;
         assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
@@ -67,7 +67,7 @@ public class TuneSmartWhereTests extends TuneUnitTest {
         String addId = "addId";
         String conversionKey = "conversionKey";
 
-        testObj.startMonitoring(context, addId, conversionKey, true);
+        testObj.startMonitoring(context, addId, conversionKey, "", true);
 
         HashMap actualConfig = FakeProximityControl.capturedConfig;
         assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
@@ -79,7 +79,7 @@ public class TuneSmartWhereTests extends TuneUnitTest {
         String addId = "addId";
         String conversionKey = "conversionKey";
 
-        testObj.startMonitoring(context, addId, conversionKey, false);
+        testObj.startMonitoring(context, addId, conversionKey, "", false);
 
         HashMap actualConfig = FakeProximityControl.capturedConfig;
         assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
@@ -91,7 +91,7 @@ public class TuneSmartWhereTests extends TuneUnitTest {
         String addId = "addId";
         String conversionKey = "conversionKey";
 
-        testObj.startMonitoring(context, addId, conversionKey, false);
+        testObj.startMonitoring(context, addId, conversionKey, "", false);
 
         HashMap actualConfig = FakeProximityControl.capturedConfig;
         assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
@@ -103,7 +103,7 @@ public class TuneSmartWhereTests extends TuneUnitTest {
         String addId = "addId";
         String conversionKey = "conversionKey";
 
-        testObj.startMonitoring(context, addId, conversionKey, false);
+        testObj.startMonitoring(context, addId, conversionKey, "", false);
 
         HashMap actualConfig = FakeProximityControl.capturedConfig;
         assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
@@ -115,7 +115,7 @@ public class TuneSmartWhereTests extends TuneUnitTest {
         String appId = "addId";
         String conversionKey = "conversionKey";
 
-        testObj.startMonitoring(context, appId, conversionKey, false);
+        testObj.startMonitoring(context, appId, conversionKey, "", false);
 
         HashMap actualConfig = FakeProximityControl.capturedConfig;
         assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
@@ -123,11 +123,24 @@ public class TuneSmartWhereTests extends TuneUnitTest {
         assertEquals(actualConfig.get("ENABLE_GEOFENCE_RANGING"), "true");
     }
 
+    public void testStartMonitoringSetsPackageName() throws Exception {
+        String appId = "addId";
+        String conversionKey = "conversionKey";
+        String packageName = "com.test.package.name";
+
+        testObj.startMonitoring(context, appId, conversionKey, packageName, false);
+
+        HashMap actualConfig = FakeProximityControl.capturedConfig;
+        assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
+        assertTrue(actualConfig.containsKey("PACKAGE_NAME"));
+        assertEquals(actualConfig.get("PACKAGE_NAME"), packageName);
+    }
+
     public void testStartMonitoringStartsService() throws Exception {
         String addId = "addId";
         String conversionKey = "conversionKey";
 
-        testObj.startMonitoring(context, addId, conversionKey, false);
+        testObj.startMonitoring(context, addId, conversionKey, "", false);
 
         assertTrue(FakeProximityControl.hasStartServiceBeenCalled);
     }
@@ -164,6 +177,17 @@ public class TuneSmartWhereTests extends TuneUnitTest {
         assertTrue(actualConfig.containsKey("DEBUG_LOG"));
         assertEquals(actualConfig.get("DEBUG_LOG"), "false");
     }
+
+    public void testSetPackageNameCallsConfigureServiceWithPackageName() throws Exception {
+        String packageName = "com.set.package.name";
+        testObj.setPackageName(context, packageName);
+
+        HashMap actualConfig = FakeProximityControl.capturedConfig;
+        assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
+        assertTrue(actualConfig.containsKey("PACKAGE_NAME"));
+        assertEquals(actualConfig.get("PACKAGE_NAME"), packageName);
+    }
+
 }
 
 class TuneSmartWhereForTest extends TuneSmartWhere {

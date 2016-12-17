@@ -30,6 +30,7 @@ public class TuneSmartWhere {
     public static final String TUNE_SMARTWHERE_PROMPT_FOR_LOCATION_PERMISSION = "PROMPT_FOR_LOCATION_PERMISSION";
     public static final String TUNE_SMARTWHERE_NOTIFICATION_HANDLER_SERVICE = "NOTIFICATION_HANDLER_SERVICE";
     public static final String TUNE_SMARTWHERE_DEBUG_LOG = "DEBUG_LOG";
+    public static final String TUNE_SMARTWHERE_PACKAGE_NAME = "PACKAGE_NAME";
 
     public static final String TUNE_SMARTWHERE_METHOD_CONFIGURE_SERVICE = "configureService";
     public static final String TUNE_SMARTWHERE_METHOD_START_SERVICE = "startService";
@@ -49,7 +50,7 @@ public class TuneSmartWhere {
         return classForName(TUNE_SMARTWHERE_COM_PROXIMITY_LIBRARY_PROXIMITYCONTROL) != null;
     }
 
-    public void startMonitoring(Context context, String appId, String apiSecret, boolean debugMode) {
+    public void startMonitoring(Context context, String appId, String apiSecret, String packageName, boolean debugMode) {
         Class targetClass = classForName(TUNE_SMARTWHERE_COM_PROXIMITY_LIBRARY_PROXIMITYCONTROL);
         if (targetClass != null) {
             HashMap<String, String> config = new HashMap<>();
@@ -61,6 +62,7 @@ public class TuneSmartWhere {
             config.put(TUNE_SMARTWHERE_ENABLE_GEOFENCE_RANGING, STRING_TRUE);
             config.put(TUNE_SMARTWHERE_PROMPT_FOR_LOCATION_PERMISSION, STRING_FALSE);
             config.put(TUNE_SMARTWHERE_NOTIFICATION_HANDLER_SERVICE, TUNE_SMARTWHERE_NOTIFICATION_SERVICE);
+            config.put(TUNE_SMARTWHERE_PACKAGE_NAME, packageName);
             if (debugMode) {
                 config.put(TUNE_SMARTWHERE_DEBUG_LOG, STRING_TRUE);
             }
@@ -114,6 +116,24 @@ public class TuneSmartWhere {
                 TuneUtils.log("TuneSmartWhere.setDebugMode: " + e.getLocalizedMessage());
             }
         }
+    }
+
+
+    public void setPackageName(Context context, final String packageName) {
+        Class targetClass = classForName(TUNE_SMARTWHERE_COM_PROXIMITY_LIBRARY_PROXIMITYCONTROL);
+        if (targetClass != null) {
+            HashMap<String, String> config = new HashMap<String, String>() {{
+                put(TUNE_SMARTWHERE_PACKAGE_NAME, packageName);
+            }};
+            try {
+                @SuppressWarnings("unchecked")
+                Method configureService = targetClass.getMethod(TUNE_SMARTWHERE_METHOD_CONFIGURE_SERVICE, Context.class, HashMap.class);
+                configureService.invoke(targetClass, context, config);
+            } catch (Exception e) {
+                TuneUtils.log("TuneSmartWhere.setPackageName: " + e.getLocalizedMessage());
+            }
+        }
+
     }
 
     protected static synchronized void setInstance(TuneSmartWhere tuneProximity) {

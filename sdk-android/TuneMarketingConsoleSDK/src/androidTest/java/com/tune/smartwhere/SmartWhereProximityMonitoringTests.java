@@ -137,7 +137,7 @@ public class SmartWhereProximityMonitoringTests extends TuneUnitTest {
         shutdownWaitAndRecreatePubQueue();
 
         verify(mockTuneSmartWhere).isSmartWhereAvailable();
-        verify(mockTuneSmartWhere).startMonitoring(mContext, TuneTestConstants.advertiserId, TuneTestConstants.conversionKey, false);
+        verify(mockTuneSmartWhere).startMonitoring(mContext, TuneTestConstants.advertiserId, TuneTestConstants.conversionKey, TuneTestConstants.appId, false);
     }
 
     public void testSetShouldAutoCollectDeviceLocationDoesntAttemptToStartProximityMonitoringWhenSetToTrueButNotInstalled() throws Exception {
@@ -151,8 +151,7 @@ public class SmartWhereProximityMonitoringTests extends TuneUnitTest {
         shutdownWaitAndRecreatePubQueue();
 
         verify(mockTuneSmartWhere).isSmartWhereAvailable();
-        verify(mockTuneSmartWhere, never()).startMonitoring(mContext, TuneTestConstants.advertiserId, TuneTestConstants.conversionKey, false);
-
+        verify(mockTuneSmartWhere, never()).startMonitoring(any(Context.class), any(String.class), any(String.class), any(String.class), any(Boolean.class));
     }
 
     public void testSetDebugModeTrueSetsProximityDebugModeTrueWhenInstalled() throws Exception {
@@ -182,7 +181,35 @@ public class SmartWhereProximityMonitoringTests extends TuneUnitTest {
         verify(mockTuneSmartWhere).setDebugMode(mContext, false);
     }
 
-    public void testSetDebugModeDoesntSetsProximityDebugModeWhenInstalled() throws Exception {
+    public void testSetPackageNameDoesntSetsProximityPackageNameWhenNotInstalled() throws Exception {
+        shutdownWaitAndRecreatePubQueue();
+        String expectedPackageName = "com.expected.package.name";
+        TuneSmartWhere mockTuneSmartWhere = mock(TuneSmartWhere.class);
+        TuneSmartWhere.setInstance(mockTuneSmartWhere);
+        when(mockTuneSmartWhere.isSmartWhereAvailable()).thenReturn(false);
+
+        tune.setPackageName(expectedPackageName);
+        shutdownWaitAndRecreatePubQueue();
+
+        verify(mockTuneSmartWhere).isSmartWhereAvailable();
+        verify(mockTuneSmartWhere, never()).setPackageName(any(Context.class), any(String.class));
+    }
+
+    public void testSetPackageNameSetsProximityPackageNameWhenInstalled() throws Exception {
+        shutdownWaitAndRecreatePubQueue();
+        String expectedPackageName = "com.another.expected.package.name";
+        TuneSmartWhere mockTuneSmartWhere = mock(TuneSmartWhere.class);
+        TuneSmartWhere.setInstance(mockTuneSmartWhere);
+        when(mockTuneSmartWhere.isSmartWhereAvailable()).thenReturn(true);
+
+        tune.setPackageName(expectedPackageName);
+        shutdownWaitAndRecreatePubQueue();
+
+        verify(mockTuneSmartWhere).isSmartWhereAvailable();
+        verify(mockTuneSmartWhere).setPackageName(mContext, expectedPackageName);
+    }
+
+    public void testSetDebugModeDoesntSetsProximityDebugModeWhenNotInstalled() throws Exception {
         TuneSmartWhere mockTuneSmartWhere = mock(TuneSmartWhere.class);
         TuneSmartWhere.setInstance(mockTuneSmartWhere);
         when(mockTuneSmartWhere.isSmartWhereAvailable()).thenReturn(false);

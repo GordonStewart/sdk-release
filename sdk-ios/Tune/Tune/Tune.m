@@ -215,6 +215,11 @@ static TuneTracker *_sharedManager = nil;
     
     [opQueue addOperationWithBlock:^{
         [[TuneManager currentManager].userProfile setPackageName:packageName];
+#if TUNE_ENABLE_SMARTWHERE && TARGET_OS_IOS
+        if ([TuneSmartWhereHelper isSmartWhereAvailable]) {
+            [[TuneSmartWhereHelper getInstance] setPackageName:packageName];
+        }
+#endif
     }];
 }
 

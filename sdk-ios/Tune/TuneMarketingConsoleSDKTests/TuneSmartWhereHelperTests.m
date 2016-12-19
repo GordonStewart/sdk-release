@@ -274,6 +274,33 @@
     [mockTestObj verify];
 }
 
+#pragma mark - setPackageName tests
+
+- (void)testSetPackageNameSetsPackageNameConfigAndInvokesSmartWhereConfig {
+    NSString *expectedPackageName = @"com.expected.package.name";
+    [testObj setSmartWhere:mockSmartWhere];
+    id mockTestObj = OCMPartialMock(testObj);
+    [[mockTestObj expect] setConfig:[OCMArg checkWithBlock:^BOOL(id value) {
+        if ([value isKindOfClass:[NSDictionary class]]) {
+            NSDictionary* actualConfig = value;
+            return actualConfig[@"PACKAGE_NAME"] && [actualConfig[@"PACKAGE_NAME"] isEqual:expectedPackageName];
+        }
+        return NO;
+    }]];
+    
+    [(TuneSmartWhereHelper*)mockTestObj setPackageName:expectedPackageName];
+    
+    [mockTestObj verify];
+}
+
+- (void)testSetPackageNameDoesntAttemptWhenNotInstanciated {
+    id mockTestObj = OCMPartialMock(testObj);
+    [[mockTestObj reject] setConfig:OCMOCK_ANY];
+    
+    [(TuneSmartWhereHelper*)mockTestObj setPackageName:@"any.package.name"];
+    
+    [mockTestObj verify];
+}
 
 #pragma mark - stopMonitoring tests
 

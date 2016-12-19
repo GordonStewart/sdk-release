@@ -92,6 +92,16 @@ NSString * const TUNE_SMARTWHERE_PACKAGE_NAME = @"PACKAGE_NAME";
     }
 }
 
+- (void)setPackageName:(NSString *)packageName {
+    @synchronized(self) {
+        if (_smartWhere) {
+            NSMutableDictionary *config = [NSMutableDictionary new];
+            config[TUNE_SMARTWHERE_PACKAGE_NAME] = packageName;
+            [self setConfig:config];
+        }
+    }
+}
+
 
 #pragma mark - SmartWhere methods
 

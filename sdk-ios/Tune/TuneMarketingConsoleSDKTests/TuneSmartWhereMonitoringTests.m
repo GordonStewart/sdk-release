@@ -140,6 +140,30 @@
     [smartWhereHelperMock verify];
 }
 
+#pragma mark - setPackageName tests
+
+- (void)testSetPackageNameCallsSmartwhereHelperSetPackageNameWhenInstalled {
+    NSString *expectedPackageName = @"com.expected.package.name";
+    [[[[smartWhereHelperMock expect] classMethod] andReturnValue:OCMOCK_VALUE(YES)] isSmartWhereAvailable];
+    [(TuneSmartWhereHelper*)[smartWhereHelperMock expect] setPackageName:expectedPackageName];
+    
+    [Tune setPackageName:expectedPackageName];
+    waitForQueuesToFinish();
+    
+    [smartWhereHelperMock verify];
+}
+
+- (void)testSetPackageNameDoesntAttemptToSetOnSmartwhereHelperWhenNotInstalled {
+    NSString *expectedPackageName = @"com.expected.package.name";
+    [[[[smartWhereHelperMock expect] classMethod] andReturnValue:OCMOCK_VALUE(NO)] isSmartWhereAvailable];
+    [(TuneSmartWhereHelper*)[smartWhereHelperMock reject] setPackageName:OCMOCK_ANY];
+    
+    [Tune setPackageName:expectedPackageName];
+    waitForQueuesToFinish();
+    
+    [smartWhereHelperMock verify];
+}
+
 @end
 
 #endif

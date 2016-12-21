@@ -20,7 +20,7 @@ public class TuneSmartWhere {
     private static volatile TuneSmartWhere instance = null;
 
     public static final String TUNE_SMARTWHERE_COM_PROXIMITY_LIBRARY_PROXIMITYCONTROL = "com.proximity.library.ProximityControl";
-    public static final String TUNE_SMARTWHERE_NOTIFICATION_SERVICE = "com.tune.TuneSmartWhereNotificationService";
+    public static final String TUNE_SMARTWHERE_NOTIFICATION_SERVICE = "com.tune.smartwhere.TuneSmartWhereNotificationService";
 
     public static final String TUNE_SMARTWHERE_API_KEY = "API_KEY";
     public static final String TUNE_SMARTWHERE_API_SECRET = "API_SECRET";

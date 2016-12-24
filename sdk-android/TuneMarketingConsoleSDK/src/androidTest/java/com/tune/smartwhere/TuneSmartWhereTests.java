@@ -84,7 +84,7 @@ public class TuneSmartWhereTests extends TuneUnitTest {
         HashMap actualConfig = FakeProximityControl.capturedConfig;
         assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
         assertTrue(actualConfig.containsKey("NOTIFICATION_HANDLER_SERVICE"));
-        assertEquals(actualConfig.get("NOTIFICATION_HANDLER_SERVICE"), "com.tune.TuneSmartWhereNotificationService");
+        assertEquals(actualConfig.get("NOTIFICATION_HANDLER_SERVICE"), "com.tune.smartwhere.TuneSmartWhereNotificationService");
     }
 
     public void testStartMonitoringSetsPermissionPromptingOff() throws Exception {
@@ -121,19 +121,6 @@ public class TuneSmartWhereTests extends TuneUnitTest {
         assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
         assertTrue(actualConfig.containsKey("ENABLE_GEOFENCE_RANGING"));
         assertEquals(actualConfig.get("ENABLE_GEOFENCE_RANGING"), "true");
-    }
-
-    public void testStartMonitoringSetsPackageName() throws Exception {
-        String appId = "addId";
-        String conversionKey = "conversionKey";
-        String packageName = "com.test.package.name";
-
-        testObj.startMonitoring(context, appId, conversionKey, packageName, false);
-
-        HashMap actualConfig = FakeProximityControl.capturedConfig;
-        assertTrue(FakeProximityControl.hasConfigureServiceBeenCalled);
-        assertTrue(actualConfig.containsKey("PACKAGE_NAME"));
-        assertEquals(actualConfig.get("PACKAGE_NAME"), packageName);
     }
 
     public void testStartMonitoringStartsService() throws Exception {

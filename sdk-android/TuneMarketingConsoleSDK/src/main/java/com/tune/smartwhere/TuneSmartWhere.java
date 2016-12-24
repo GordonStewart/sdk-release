@@ -62,7 +62,6 @@ public class TuneSmartWhere {
             config.put(TUNE_SMARTWHERE_ENABLE_GEOFENCE_RANGING, STRING_TRUE);
             config.put(TUNE_SMARTWHERE_PROMPT_FOR_LOCATION_PERMISSION, STRING_FALSE);
             config.put(TUNE_SMARTWHERE_NOTIFICATION_HANDLER_SERVICE, TUNE_SMARTWHERE_NOTIFICATION_SERVICE);
-            config.put(TUNE_SMARTWHERE_PACKAGE_NAME, packageName);
             if (debugMode) {
                 config.put(TUNE_SMARTWHERE_DEBUG_LOG, STRING_TRUE);
             }
